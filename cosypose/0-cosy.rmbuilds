@@ -1,0 +1,1 @@
+rm -rf cosypose/build cosypose/deps/bullet3/build cosypose/deps/job-runner/build
