@@ -1,9 +1,7 @@
 set -ex
 
-if [ -d cosypose ]; then
-    (cd cosypose; git pull)
-else
-    git clone git@github.com:ydepledt/cosypose.git
+if [ ! -r cosypose/README.md ]; then
+    git submodule update --init --recursive
 fi
 
 find cosypose -name __pycache__ -exec rm -rf {} \; || true
