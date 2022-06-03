@@ -1,0 +1,15 @@
+set -ex
+
+if [ -d cosypose ]; then
+    (cd cosypose; git pull)
+else
+    git clone git@github.com:ydepledt/cosypose.git
+fi
+
+find cosypose -name __pycache__ -exec rm -rf {} \; || true
+#sudo find cosypose -name __pycache__ -exec rm -rf {} \; || true
+
+
+cosypwd=$(pwd)/cosypose
+
+(cd ../__gputainer; APP=${cosypwd} ./gputainer.build)

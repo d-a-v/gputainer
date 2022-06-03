@@ -1,0 +1,27 @@
+set -ex
+
+extconda=true
+
+APPDIR=${APP%/*}
+APPNAME=${APP##*/}
+
+if [ -z "${APP}" ]; then
+    echo "\${APP} must point to an application directory (environment.yaml, requirements.txt)"
+    exit 1
+fi
+
+if ${extconda}; then
+    opts="--sandbox --bind ${APPDIR}/CONDA:/conda"
+    mkdir -p ${APPDIR}/CONDA
+fi
+
+if [ ! -x ${APPDIR}/gputainer.postinstall ]; then
+    echo "Could not find an executable shell script '${APPDIR}/gputainer.postinstall'"
+    echo "(an empty one may be created)"
+    exit 1
+fi
+
+# export APPDIR to apptainer
+export APPTAINER_APPDIR=${APPDIR}
+
+apptainer build --fakeroot ${opts} --bind ${APP}:/hostpwd --bind /net:/net --bind /local:/local ${APP}.sif gputainer.def

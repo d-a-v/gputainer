@@ -1,0 +1,21 @@
+#!/bin/bash -ex
+
+run=${1-bash $(pwd)/run-in-container.bash}
+
+APPDIR=${PWD%/*}
+APPNAME=${PWD##*/}
+
+# CUDA_VISIBLE_DEVICES should be 0 or 1 or 0,1 ...
+export APPTAINERENV_CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES-0}
+
+# virtualgl for glad
+export APPTAINERENV_DISPLAY=:1
+
+# tmp in tmp with X11 socket
+tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
+mkdir -p ${tmp}
+cp -a /tmp/.X11-unix ${tmp}/
+
+#time apptainer exec --nv --bind /net/pfcalcul/pfcalcul:/pfcalcul --bind ${tmp}:/tmp tless.sif ${run}
+# X11 socket is in /tmp (TODO: link it to the subdirectory above)
+time apptainer exec --nv --writable --bind $(pwd)/CONDA:/conda --bind $(pwd)/${APPNAME}:/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp ${APPNAME}.sif ${run}

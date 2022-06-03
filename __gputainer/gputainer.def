@@ -1,0 +1,96 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%setup
+    mkdir ${APPTAINER_ROOTFS}/local
+    mkdir ${APPTAINER_ROOTFS}/conda
+    mkdir ${APPTAINER_ROOTFS}/hostpwd
+    mkdir ${APPTAINER_ROOTFS}/net
+    ln -s /net/pfcalcul/pfcalcul ${APPTAINER_ROOTFS}/pfcalcul
+    
+# copy these local files into container
+%files
+    ${APPTAINER_APPDIR}/gputainer.postinstall /gputainer.postinstall
+    debs/virtualgl_3.0_amd64.deb
+    #debs/cudnn-local-repo-ubuntu2004-8.4.0.27_1.0-1_amd64.deb
+
+# build commands
+%post
+    ls -al /gputainer.postinstall
+
+    ###################################################
+    ###### check if %environment must be updated ######
+    export CUDAVERSION1=10.2
+    export CUDAVERSION2=102
+    export ROOT=/conda
+    export FAST="--override-channels -c main -c conda-forge"
+    export PREFIX1=${ROOT}/conda
+    export PREFIX2=${ROOT}/app
+    export PATH=${PREFIX2}/bin:${PREFIX1}/bin:${PATH}
+    export DEBIAN_FRONTEND=noninteractive
+
+    ###################################################
+    apt -y update
+    # python needs compiler suite
+    apt -y install wget build-essential sudo # gdb
+
+    ###################################################
+    # ubuntu nvidia GL drivers
+    # https://docs.nvidia.com/deploy/cuda-compatibility/index.html#use-the-right-compat-package
+    apt -y install libnvidia-gl-510 nvidia-utils-510
+        
+    # X/GL general dependencies
+    apt -y install x11-apps mesa-utils liburdfdom-model libglib2.0-0
+
+    dpkg -i debs/virtualgl_3.0_amd64.deb || apt -y -f install
+
+    ###################################################
+    # CONDA
+    mkdir -p ${ROOT}
+    cd ${ROOT}
+    if [ ! -d ${PREFIX1} ]; then
+        [ -r Miniconda3-latest-Linux-x86_64.sh ] || wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        bash Miniconda3-latest-Linux-x86_64.sh -b -p ${PREFIX1}
+    fi
+    if [ ! -d ${PREFIX2} ]; then
+        conda env create --file /hostpwd/environment.yaml --prefix ${PREFIX2}
+    fi
+    # update .bashrc:
+    conda init bash
+
+    # build application
+    ## ubuntu runs dash incompatible with "shopt" command run in conda init script so .bashrc cannot be sourced
+    ## also PS1 must be set to something or .bashrc's first line will discard the whole script
+    bash -c "PS1=blah; . ${HOME}/.bashrc; conda activate ${PREFIX2}; export PATH=${PREFIX2}/bin:${PATH}; cd /hostpwd; python3 setup.py install; /gputainer.postinstall"
+
+
+
+
+##### TEST
+
+# environment at runtime
+%environment
+    export CUDAVERSION1=10.2
+    export CUDAVERSION2=102
+    export ROOT=/conda
+    export FAST="--override-channels -c main -c conda-forge"
+    export PREFIX1=${ROOT}/conda
+    export PREFIX2=${ROOT}/app
+    export PATH=${PREFIX2}/bin:${PREFIX1}/bin:${PATH}
+    export DEBIAN_FRONTEND=noninteractive
+    export CUDA_HOME=/usr/local/cuda-${CUDAVERSION1}
+
+
+# ??? apptainer run sifile /// ./sifile
+%runscript
+    . ${PREFIX1}/etc/profile.d/conda.sh
+    conda activate ${PREFIX2}
+    python3 --version
+    cd cosypose
+    python3 -m cosypose.scripts.run_cosypose_eval --config tless-siso --debug
+
+# ??? apptainer exec siffile
+%startscript
+    . ${PREFIX1}/etc/profile.d/conda.sh
+    conda activate ${PREFIX2}
+    python3 --version
