@@ -1,1 +1,3 @@
+find cosypose -name __pycache__ -exec rm -rf {} \; || true
+#sudo find cosypose -name __pycache__ -exec rm -rf {} \; || true
 rm -rf cosypose/build cosypose/deps/bullet3/build cosypose/deps/job-runner/build

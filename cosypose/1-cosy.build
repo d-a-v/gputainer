@@ -4,10 +4,6 @@ if [ ! -r cosypose/README.md ]; then
     git submodule update --init --recursive
 fi
 
-find cosypose -name __pycache__ -exec rm -rf {} \; || true
-#sudo find cosypose -name __pycache__ -exec rm -rf {} \; || true
-
-
 cosypwd=$(pwd)/cosypose
 
 (cd ../__gputainer; APP=${cosypwd} ./gputainer.build)
