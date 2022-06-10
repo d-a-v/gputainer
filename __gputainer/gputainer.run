@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 run=${1-bash $(pwd)/run-in-container.bash}
 
@@ -8,14 +8,23 @@ APPNAME=${PWD##*/}
 # CUDA_VISIBLE_DEVICES should be 0 or 1 or 0,1 ...
 export APPTAINERENV_CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES-0}
 
-# virtualgl for glad
-export APPTAINERENV_DISPLAY=:1
-
 # tmp in tmp with X11 socket
-tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
-mkdir -p ${tmp}
-cp -a /tmp/.X11-unix ${tmp}/
+if false; then
+    # XXX RETEST ME
+    tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
+    mkdir -p ${tmp}
+    cp -a /tmp/.X11-unix ${tmp}/
+else
+    tmp=/tmp
+fi
 
-#time apptainer exec --nv --bind /net/pfcalcul/pfcalcul:/pfcalcul --bind ${tmp}:/tmp tless.sif ${run}
-# X11 socket is in /tmp (TODO: link it to the subdirectory above)
-time apptainer exec --nv --writable --bind $(pwd)/CONDA:/conda --bind $(pwd)/${APPNAME}:/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp ${APPNAME}.sif ${run}
+echo "DRI on host:"
+ls -alr /dev/dri
+echo "DISPLAY on host: '${DISPLAY}'"
+
+#xeyes -geometry +500+0 &
+
+set -x
+
+export APPTAINERENV_MYHOME=${HOME}
+time apptainer exec --nv --writable --bind $(pwd)/PYTHAINER:/pyenv --bind $(pwd)/${APPNAME}:/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp ${APPNAME}.sif ${run}

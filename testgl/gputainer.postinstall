@@ -1,0 +1,3 @@
+[ -d pegl ] || git clone https://github.com/perey/pegl.git
+cd pegl
+python setup.py install

@@ -1,0 +1,20 @@
+#!/bin/bash -ex
+
+temp=/tmp/test-venv-deleteme-$$
+
+python3 -m venv ${temp}
+pyenv=${temp}/bin/activate
+. ${pyenv}
+
+cd testgl
+pip install -r requirements.txt
+../gputainer.postinstall
+cd ..
+
+set +e
+. ./run-in-container.bash
+
+echo "Play with me then exit:"
+bash
+
+rm -rf ${temp}

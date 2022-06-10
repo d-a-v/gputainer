@@ -1,6 +1,6 @@
 set -ex
 
-extconda=true
+extpython=true
 
 APPDIR=${APP%/*}
 APPNAME=${APP##*/}
@@ -10,9 +10,9 @@ if [ -z "${APP}" ]; then
     exit 1
 fi
 
-if ${extconda}; then
-    opts="--sandbox --bind ${APPDIR}/CONDA:/conda"
-    mkdir -p ${APPDIR}/CONDA
+if ${extpython}; then
+    opts="--sandbox --bind ${APPDIR}/PYTHAINER:/pyenv"
+    mkdir -p ${APPDIR}/PYTHAINER
 fi
 
 if [ ! -x ${APPDIR}/gputainer.postinstall ]; then

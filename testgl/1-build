@@ -1,0 +1,4 @@
+set -ex
+
+testglpwd=$(pwd)/testgl
+(cd ../__gputainer; APP=${testglpwd} ./gputainer.build)

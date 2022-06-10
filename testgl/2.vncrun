@@ -1,0 +1,36 @@
+
+id=deleteme
+
+logfile=$(pwd)/LOG-${id}.txt
+
+# account's HOME might not be accessible, but it must exist
+[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir ${HOME}; }
+
+password1=1234abc
+
+password2=${password1}
+passwordfile=${HOME}/.vnc/vncpasswdtmp.${id}
+touch ${passwordfile}
+chmod 600 ${passwordfile}
+( echo ${password1}; echo ${password2}; ) | /opt/TurboVNC/bin/vncpasswd -f >> ${passwordfile}
+#/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup "xterm $(pwd)/2.run"
+/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup "xterm -geometry 200x60+0+0"
+
+while [ ! -r ${logfile} ]; do
+    echo "waiting for ${logfile}"
+    sleep 1
+done
+
+viewer="/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto host:port"
+#(${viewer} || echo ${viewer}) &
+
+while [ ! -r ${logfile} ]; do
+    echo "waiting for ${logfile}"
+    sleep 1
+done
+
+viewer="/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto host:port"
+#(${viewer} || echo ${viewer}) &
+echo ${viewer}
+
+tail -f ${logfile}
