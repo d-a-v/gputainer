@@ -1,4 +1,6 @@
 set -ex
 
+export nvidia="nvidia-340"
+
 testglpwd=$(pwd)/testgl
 (cd ../__gputainer; APP=${testglpwd} ./gputainer.build)

@@ -29,19 +29,22 @@ From: ubuntu:20.04
 
     ###################################################
     apt -y update
-    # python needs compiler suite
-    apt -y install wget build-essential sudo git # gdb
 
     ###################################################
     # ubuntu nvidia GL drivers
     # https://docs.nvidia.com/deploy/cuda-compatibility/index.html#use-the-right-compat-package
-    apt -y install libnvidia-gl-510 nvidia-utils-510
+    echo "Installing user packages: ${NVIDIA_PKG}"
+    [ -z "${NVIDIA_PKG}" ] || apt -y install ${NVIDIA_PKG}
     apt -y install xterm glmark2 glmark2-es2 #debug
         
     # X/GL general dependencies
     apt -y install x11-apps mesa-utils liburdfdom-model libglib2.0-0
 
     dpkg -i debs/virtualgl_3.0_amd64.deb || apt -y -f install
+
+    ###################################################
+    # python needs compiler suite
+    apt -y install wget build-essential sudo git # gdb
 
     ###################################################
     # python environment
