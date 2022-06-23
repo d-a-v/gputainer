@@ -9,12 +9,12 @@ if ${debug}; then
     xterm -fg black -bg grey
 fi
 
-. /conda/conda/etc/profile.d/conda.sh
-conda activate /conda/app
+. /pyenv/conda/etc/profile.d/conda.sh
+conda activate /pyenv/app
 
 # PATH and LD_LIBRARY_PATH from python_path ?
-export PATH=/conda/app/bin:${PATH}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/conda/app/lib/python3.7/site-packages/torch/lib
+export PATH=/pyenv/app/bin:${PATH}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/pyenv/app/lib/python3.7/site-packages/torch/lib
 
 echo inside apptainer DISPLAY=${DISPLAY}
 echo CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}
