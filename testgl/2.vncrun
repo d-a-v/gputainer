@@ -6,10 +6,18 @@
 
 id=deleteme
 
-logfile=$(pwd)/LOG-${id}.txt
+logfile=$(pwd)/LOG-${id}.txt  # move it with other files below
+
+dri=/dev/dri/card1   # <----- #@!$!$#@ from slurm ?
+
+if [ -r "${dri}" ]; then
+    vgl_options="-d ${dri}"
+else
+    echo "NOT USING VGL DISPLAY ?" 1>&2
+fi
 
 # account's HOME might not be accessible, but it must exist
-[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir ${HOME}; }
+[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir -p ${HOME}/.vnc; }
 
 password1=$$
 #password1=1234abc
@@ -21,7 +29,8 @@ logstdout=${passwordfile}-out
 logstderr=${passwordfile}-err
 startup=${passwordfile}-startup
 
-echo "bash -c 'vglrun $(pwd)/2.run 1> ${logstdout} 2> ${logstderr}'" > ${startup}
+#echo "vglrun ${vgl_options} xterm                 1> ${logstdout} 2> ${logstderr}'" > ${startup}
+echo "bash -c 'vglrun ${vgl_options} $(pwd)/2.run 1> ${logstdout} 2> ${logstderr}'" > ${startup}
 chmod +x ${startup}
 
 rm -f ${logfile} ${logstdout} ${logstderr} ${passwordfile}

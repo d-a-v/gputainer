@@ -83,7 +83,7 @@ def main():
 
     glTranslatef(0.0,0.0, -5)
 
-    duration_sec = 5
+    duration_sec = 10
     duration_ns = duration_sec * 1000000000
     start_ns = time.time_ns()
     counter = 0
