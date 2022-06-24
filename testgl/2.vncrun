@@ -1,4 +1,9 @@
 
+# !!!!! properly configure VirtualGL !!!!!
+# DOC:
+# https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
+# then something/gdm/lightdm must be always running on display (:0 ?)
+
 id=deleteme
 
 logfile=$(pwd)/LOG-${id}.txt
@@ -6,31 +11,41 @@ logfile=$(pwd)/LOG-${id}.txt
 # account's HOME might not be accessible, but it must exist
 [ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir ${HOME}; }
 
-password1=1234abc
+password1=$$
+#password1=1234abc
 
 password2=${password1}
-passwordfile=${HOME}/.vnc/vncpasswdtmp.${id}
+passwordfile=${HOME}/.vnc/vnctmp.${id}
+
+logstdout=${passwordfile}-out
+logstderr=${passwordfile}-err
+startup=${passwordfile}-startup
+
+echo "bash -c 'vglrun $(pwd)/2.run 1> ${logstdout} 2> ${logstderr}'" > ${startup}
+chmod +x ${startup}
+
+rm -f ${logfile} ${logstdout} ${logstderr} ${passwordfile}
+
+echo "=========="
+echo "vnc log file: ${logfile}"
+echo "application stdout: ${logstdout}"
+echo "application stderr: ${logstderr}"
+echo "=========="
+
 touch ${passwordfile}
-chmod 600 ${passwordfile}
+chmod go-rwx ${passwordfile}
 ( echo ${password1}; echo ${password2}; ) | /opt/TurboVNC/bin/vncpasswd -f >> ${passwordfile}
-#/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup "xterm $(pwd)/2.run"
-/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup "xterm -geometry 200x60+0+0"
+
+/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup ${startup}
 
 while [ ! -r ${logfile} ]; do
     echo "waiting for ${logfile}"
     sleep 1
 done
 
-viewer="/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto host:port"
-#(${viewer} || echo ${viewer}) &
+tail -f ${logfile} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,==========RUN IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n==========\n,p" & viewer=$!
+tail -f ${logfile} | sed -ne "/Killing Xvnc process ID/q"
 
-while [ ! -r ${logfile} ]; do
-    echo "waiting for ${logfile}"
-    sleep 1
-done
+#cat ${logfile}
 
-viewer="/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto host:port"
-#(${viewer} || echo ${viewer}) &
-echo ${viewer}
-
-tail -f ${logfile}
+kill ${viewer}
