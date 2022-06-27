@@ -1,12 +1,14 @@
 
-debug=true
-#debug=false
+set -ex
 
-if ${debug}; then
-    echo "vglrun -d ${DISPLAY} glxgears &"
-    echo "glxgears &"
-    echo "glmark2 --validate"
-    xterm -fg black -bg grey
+# $HOME can be an artificial place, and
+# - it is not kept up through apptainer
+# - it is forbidden to set it up via APPTAINERENV_HOME
+# so it is trnasmitted through APPTAINERENV_MYHOME:
+if [ -z "${MYHOME}" ]; then
+    echo "\$MYHOME (from APPTAINERENV_MYHOME) should be set!"
+else
+    export HOME=${MYHOME}
 fi
 
 . /pyenv/conda/etc/profile.d/conda.sh
@@ -22,9 +24,8 @@ echo XAUTHORITY=${XAUTHORITY}
 echo PWD=$(pwd)
 ls -alr /dev/dri
 
-# vglrun seems to need BOTH '-d :1' and 'DISPLAY=:1' ?
-#vglrun -d ${DISPLAY}
 python -c 'import torch;print("torch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
+#vglrun -d /dev/dri/card1 python -c 'import torch;print("torch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
 
 export CUDA_LAUNCH_BLOCKING=1
 cd cosypose
@@ -37,5 +38,7 @@ cd cosypose
 export PYTHONPATH=$(pwd)/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/bullet3/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/job-runner/build/lib.linux-x86_64-cpython-37:${PYTHONPATH}
 export LD_LIBRARY_PATH=$(pwd)/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/bullet3/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/job-runner/build/lib.linux-x86_64-cpython-37:${LD_LIBRARY_PATH}
 
-#vglrun -d ${DISPLAY}
-python -m cosypose.scripts.run_cosypose_eval --config tless-siso --debug
+xeyes & eyes=$!
+#python -m cosypose.scripts.run_cosypose_eval --config tless-siso --debug
+python -m cosypose.scripts.prediction_script
+kill $eyes

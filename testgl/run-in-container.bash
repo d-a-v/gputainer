@@ -1,5 +1,15 @@
 
-[ -z "${MYHOME}" ] || export HOME=${MYHOME}
+set -ex
+
+# $HOME can be an artificial place, and
+# - it is not kept up through apptainer
+# - it is forbidden to set it up via APPTAINERENV_HOME
+# so it is trnasmitted through APPTAINERENV_MYHOME:
+if [ -z "${MYHOME}" ]; then
+    echo "\$MYHOME (from APPTAINERENV_MYHOME) should be set!"
+else
+    export HOME=${MYHOME}
+fi
 
 echo "DRI in container:"
 ls -alr /dev/dri
@@ -10,9 +20,5 @@ ls -al /tmp/.X11-unix
 . ${pyenv-/pyenv/venv/bin/activate}
 cd testgl
 
-#glxgears
-#vglrun -d ${DISPLAY} glxgears
-
 python cube.py
-#vglrun python pegl/tests/test_egl.py
-#vglrun python pegl/tests/test_display_mock.py
+python hello_pybullet.py

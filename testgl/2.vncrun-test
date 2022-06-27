@@ -1,0 +1,64 @@
+
+# !!!!! properly configure VirtualGL !!!!!
+# DOC:
+# https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
+# then something/gdm/lightdm must be always running on display (:0 ?)
+
+export CUDA_VISIBLE_DEVICES=1  # test
+id=deleteme
+
+
+
+first_cuda=${CUDA_VISIBLE_DEVICES%%,*}   # 2,3,4,5 => 2
+export dri=/dev/dri/card${first_cuda}
+
+if [ ! -r "$dri" ]; then
+    echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}  =>  '${dri}' is not accessible  ?" 1>&2
+    exit 1
+fi
+vgl_options="-d ${dri}"
+
+logfile=$(pwd)/LOG-${id}.txt  # move it with other files below
+
+# account's HOME might not be accessible, but it must exist
+[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir -p ${HOME}/.vnc; }
+
+password1=$$
+#password1=1234abc
+
+password2=${password1}
+passwordfile=${HOME}/.vnc/vnctmp.${id}
+
+logstdout=${passwordfile}-out
+logstderr=${passwordfile}-err
+startup=${passwordfile}-startup
+
+#echo "bash -c 'vglrun ${vgl_options} xterm -e $(pwd)/2.run 1> ${logstdout} 2> ${logstderr}'" > ${startup}
+echo "vglrun ${vgl_options} xterm -e bash -c '$(pwd)/2.run 2>&1 | tee ${logstdout}'" > ${startup}
+chmod +x ${startup}
+
+rm -f ${logfile} ${logstdout} ${logstderr} ${passwordfile}
+
+echo "=========="
+echo "vnc log file: ${logfile}"
+echo "application stdout: ${logstdout}"
+echo "application stderr: ${logstderr}"
+echo "=========="
+
+touch ${passwordfile}
+chmod go-rwx ${passwordfile}
+( echo ${password1}; echo ${password2}; ) | /opt/TurboVNC/bin/vncpasswd -f >> ${passwordfile}
+
+/opt/TurboVNC/bin/vncserver -vgl -log ${logfile} -rfbauth ${passwordfile} -xstartup ${startup}
+
+while [ ! -r ${logfile} ]; do
+    echo "waiting for ${logfile}"
+    sleep 1
+done
+
+tail -f ${logfile} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,==========RUN IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n==========\n,p" & viewer=$!
+tail -f ${logfile} | sed -ne "/Killing Xvnc process ID/q"
+
+#cat ${logfile}
+
+kill ${viewer}
