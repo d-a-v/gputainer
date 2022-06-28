@@ -17,13 +17,16 @@ export APPTAINERENV_CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES-0}
 
 # tmp in tmp with X11 socket
 if false; then
-    # XXX RETEST ME    .X11-unix and /dev/dri/ must be copied
+    ### XXX FIXME not working
     tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
     mkdir -p ${tmp}
     cp -a /tmp/.X11-unix ${tmp}/
 else
     tmp=/tmp
 fi
+
+ls -al ${tmp}/.X11-unix
+
 
 echo "DRI on host:"
 ls -alr /dev/dri

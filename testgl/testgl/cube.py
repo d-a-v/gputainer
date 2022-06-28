@@ -68,6 +68,7 @@ def create_initialized_headless_egl_display():
 def main():
     
     pygame.init()
+    pygame.display.list_modes()
     display = (800,600)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
