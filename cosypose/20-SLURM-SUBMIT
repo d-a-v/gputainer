@@ -1,5 +1,4 @@
 #!/bin/sh -e
-# Attempt to write the slurm script following /pfcalcul/tools/examples/gpu/cuda/pytorch example
 
 echo "Running T-LESS test to reproduce Y. Labbé results on CosyPose"
 
@@ -23,12 +22,7 @@ sbatch ${sbatchopt} << eof
 #SBATCH --output=stdout.txt
 #SBATCH --error=stderr.txt
 
-. /pfcalcul/tools/sbatchHelpers3.sh
-
-set -x
-tmp=/tmp/slurm-\${SLURM_JOB_ID}-\$\$
-mkdir \${tmp}
-time apptainer exec --nv --bind /pfcalcul --bind \${tmp}:/tmp tless.sif bash run-in-container.bash
+./2-runvnc
 
 eof
 )

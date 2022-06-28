@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# !!!!! properly configure VirtualGL !!!!!
+# DOC: # https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
+
+if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
+    export CUDA_VISIBLE_DEVICES=1
+    echo "for testing:" 1>&2
+fi
+echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
+
+id=${SLURM_JOBID-deleteme}
+
+first_cuda=${CUDA_VISIBLE_DEVICES%%,*}   # 2,3,4,5 => 2
+export dri=/dev/dri/card${first_cuda}
+
+if [ ! -r "$dri" ]; then
+    echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}  =>  '${dri}' is not accessible  ?" 1>&2
+    exit 1
+fi
+vgl_options="-d ${dri}"
+
+
+# account's HOME might not be accessible, but it must exist
+[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir -p ${HOME}/.vnc; }
+
+password1=$$
+password2=view  # view-only password
+passwordfile=${HOME}/.vnc/vnctmp-passwd-${id}
+startup=${HOME}/.vnc/vnctmp-startup-${id}
+logvnc=${HOME}/.vnc/vnctmp-vnc-${id}.txt
+logapp=$(pwd)/log-stdout-${id}.txt
+
+rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
+
+echo BLOB:$(pwd)
+
+echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '(echo BLUB; pwd; ../__gputainer/run) 2>&1 | tee ${logapp}'" > ${startup}
+chmod +x ${startup}
+
+touch ${passwordfile}
+chmod go-rwx ${passwordfile}
+( echo ${password1}; echo ${password2}; ) | /opt/TurboVNC/bin/vncpasswd -f >> ${passwordfile}
+
+/opt/TurboVNC/bin/vncserver -vgl -log ${logvnc} -rfbauth ${passwordfile} -xstartup ${startup}
+
+waitcounter=10
+while [ ! -r ${logvnc} ]; do
+    waitcounter=$((waitcounter - 1))
+    if [ ${waitcounter} -eq 0 ]; then
+        echo "Could not start vnc server?" 1>&2
+        exit 1
+    fi
+    echo "waiting for ${logvnc} (${waitcounter})"
+    sleep 1
+done
+
+echo "=========="
+echo "application log: ${logapp}"
+
+tail -f ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,==========RUN IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n==========\n,p" & viewer=$!
+tail -f ${logvnc} | sed -ne "/Killing Xvnc process ID/q"
+
+#cat ${logvnc}
+
+kill ${viewer}

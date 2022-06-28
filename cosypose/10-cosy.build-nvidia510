@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+
+if [ ! -r cosypose/README.md ]; then
+    git submodule update --init --recursive
+fi
+
+NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/cosypose  ../__gputainer/build

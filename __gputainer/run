@@ -1,0 +1,37 @@
+#!/bin/bash -e
+
+echo BLAH
+pwd
+echo PWD=$PWD
+
+run=${1-$(pwd)/run-in-container}
+
+APPDIR=${PWD}/generated
+APPNAME=${PWD##*/}
+
+echo APPDIR=${APPDIR}
+echo APPNAME=${APPNAME}
+
+# CUDA_VISIBLE_DEVICES should be 0 or 1 or 0,1 ...
+export APPTAINERENV_CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES-0}
+
+# tmp in tmp with X11 socket
+if false; then
+    # XXX RETEST ME    .X11-unix and /dev/dri/ must be copied
+    tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
+    mkdir -p ${tmp}
+    cp -a /tmp/.X11-unix ${tmp}/
+else
+    tmp=/tmp
+fi
+
+echo "DRI on host:"
+ls -alr /dev/dri
+echo "DISPLAY on host: '${DISPLAY}'"
+
+#xeyes -geometry +500+0 &
+
+set -x
+
+export APPTAINERENV_MYHOME=${HOME}  # for user-run-prepare
+time apptainer exec --nv --writable --bind $(pwd)/generated/PYTHAINER:/pyenv --bind $(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp generated/${APPNAME}.sif $(pwd)/../__gputainer/user-run-prepare ${run}

@@ -1,0 +1,13 @@
+#!/bin/bash -ex
+
+echo "DRI in container:"
+ls -alr /dev/dri
+echo "DISPLAY in container: '${DISPLAY}'"
+
+ls -al /tmp/.X11-unix
+
+. ${pyenv-/pyenv/venv/bin/activate}
+cd testgl
+
+python cube.py
+python hello_pybullet.py
