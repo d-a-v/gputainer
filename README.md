@@ -23,22 +23,23 @@ This environment is desinged to help running GPU & EGL applications in a SLURM e
         - exit
         - if required, restart gdm / lightdm.
 
-- Configure users for Apptainer by updating `/etc/subuid` and `/etc/subgid`
+- Configure Apptainer users by updating `/etc/subuid` and `/etc/subgid`
 
   A helper is provided: 
 
-  `(cd __gputainer; ./apptainer-temp-add-etc-subid user)`
+  `(cd __gputainer; ./apptainer-temp-add-etc-subid <user>)`
 
 ## Check the installation
 
- - `ssh the-gpu-server`
+ - (`ssh the-gpu-server`)
  - `cd /path/to/gputainer/testgl`
  - `./1-build-nvidia-510`
  - `./2-runvnc`
       
- A short while after runningthe start script, a message will display :
+ A short while after running the start script, a message will display :
  
  "please run":
+
  `/opt/TurboVNC/bin/vncviewer -password 11111 -noreconnect -nonewconn -scale auto the-gpu-server:n`
- 
+
  This command must be copy-pasted on your local console to see the application running on the distant GPU.
