@@ -4,7 +4,8 @@
 # DOC: # https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
 
 if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
-    export CUDA_VISIBLE_DEVICES=1
+    # get last number from /dev/dri/card* list
+    export CUDA_VISIBLE_DEVICES=$(cd /dev/dri; echo card* | sed 's/.*\(.\)$/\1/')
     echo "for testing:" 1>&2
 fi
 echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
@@ -32,8 +33,6 @@ logvnc=${HOME}/.vnc/vnctmp-vnc-${id}.txt
 logapp=$(pwd)/log-stdout-${id}.txt
 
 rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
-
-echo BLOB:$(pwd)
 
 echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '(echo BLUB; pwd; ../__gputainer/run) 2>&1 | tee ${logapp}'" > ${startup}
 chmod +x ${startup}
