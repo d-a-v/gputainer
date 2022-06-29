@@ -1,9 +1,5 @@
 #!/bin/bash -e
 
-echo BLAH
-pwd
-echo PWD=$PWD
-
 run=${1-$(pwd)/run-in-container}
 
 APPDIR=${PWD}/generated
