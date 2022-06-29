@@ -4,7 +4,8 @@
 # DOC: # https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
 
 if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
-    export CUDA_VISIBLE_DEVICES=1
+    # get last number from /dev/dri/card* list
+    export CUDA_VISIBLE_DEVICES=$(cd /dev/dri; echo card* | sed 's/.*\(.\)$/\1/')
     echo "for testing:" 1>&2
 fi
 echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
