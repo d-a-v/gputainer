@@ -1,9 +1,18 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
 user=${1}
-[ ! -z "${user}" ]
+if [ -z "${user}" ]; then
+    echo "syntax: $0 <user>" 1>&2
+    exit 1
+fi
 uid=$(id -u ${user})
 gid=$(id -g ${user})
 for f in /etc/sub[ug]id; do
-    [ -r ${f} ] && echo "${user}:${uid}00000:99999" >> ${f}
+    if [ -r ${f} ]; then
+        if grep "^${user}:" ${f} > /dev/null; then
+            echo "${user} is already set in ${f}"
+        else
+            echo "${user}:${uid}00000:99999" >> ${f}
+        fi
+    fi
 done
