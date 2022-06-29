@@ -1,5 +1,5 @@
 
-# Runtime headless & batch runtime environment helper for building and starting GPU applications requiring a display, using Apptainer (ex-singularity)
+# Headless & batch runtime environment helper for building and starting GPU applications requiring a display, using Apptainer (ex-singularity)
 
 This environment is desinged to help running GPU & EGL applications in a SLURM environment.
 
