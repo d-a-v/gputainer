@@ -54,11 +54,11 @@ while [ ! -r ${logvnc} ]; do
     sleep 1
 done
 
-echo "=========="
-echo "application log: ${logapp}"
-
-tail -f ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,==========RUN IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n==========\n,p" & viewer=$!
+echo -e "========== LOGFILE: \n${logapp}\n"
+tail -f ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n,p" & viewer=$!
+tail -f ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" & viewer=$!
 tail -f ${logvnc} | sed -ne "/Killing Xvnc process ID/q"
+echo -e "==========\n"
 
 #cat ${logvnc}
 
