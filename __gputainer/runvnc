@@ -23,7 +23,9 @@ vgl_options="-d ${dri}"
 
 
 # account's HOME might not be accessible, but it must exist
-[ -d ${HOME} ] || { export HOME=$(pwd)/.temphome-$(whoami); mkdir -p ${HOME}/.vnc; }
+[ -d ${HOME} ] || export HOME=$(pwd)/.temphome-$(whoami)
+
+mkdir -p ${HOME}/.vnc
 
 password1=$$
 password2=view  # view-only password

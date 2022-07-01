@@ -30,6 +30,7 @@ if false; then
     (cd deps/job-runner; [ -d build ] || python setup.py build)
     # FIXME TODO paths below are hardcoded
     export PYTHONPATH=$(pwd)/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/bullet3/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/job-runner/build/lib.linux-x86_64-cpython-37:${PYTHONPATH}
+    export PYTHON_PATH=${PYTHONPATH}
     export LD_LIBRARY_PATH=$(pwd)/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/bullet3/build/lib.linux-x86_64-cpython-37:$(pwd)/deps/job-runner/build/lib.linux-x86_64-cpython-37:${LD_LIBRARY_PATH}
 else
     [ -d build ] || python setup.py install
