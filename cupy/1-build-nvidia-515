@@ -1,0 +1,2 @@
+#NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/cupy  ../__gputainer/build
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cupy  ../__gputainer/build

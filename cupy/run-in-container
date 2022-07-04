@@ -1,0 +1,12 @@
+#!/bin/bash -ex
+
+unset CUDA_VISIBLE_DEVICES    # necessary !?
+
+nvidia-smi
+
+. ${pyenv-/pyenv/venv/bin/activate}
+
+python -c 'import cupy;print("cupy.__version__=", cupy.__version__, "\ncupy.cuda.is_available()=", cupy.cuda.is_available(), "\ncupy.cuda.Device(0).compute_capability=", cupy.cuda.Device(0).compute_capability);'
+
+cd cupy
+python test.py

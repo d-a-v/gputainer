@@ -7,15 +7,16 @@ From: ubuntu:20.04
     mkdir ${APPTAINER_ROOTFS}/hostpwd
     mkdir ${APPTAINER_ROOTFS}/net
     ln -s /net/pfcalcul/pfcalcul ${APPTAINER_ROOTFS}/pfcalcul
-    
+
 # copy these local files into container
 %files
+    ${APPTAINER_APPDIR}/../user-preinstall /user-preinstall
     ${APPTAINER_APPDIR}/../user-postinstall /user-postinstall
-    debs/virtualgl_3.0_amd64.deb
+    ${APPTAINER_APPDIR}/../run-in-container /run-in-container
+    debs/virtualgl_3.0.1_amd64.deb
 
 # build commands
 %post
-    ls -al /user-postinstall
 
     ###################################################
     ###### check if %environment must be updated ######
@@ -29,21 +30,28 @@ From: ubuntu:20.04
     ###################################################
     apt -y update
 
+    if [ -x /user-preinstall ]; then
+        /user-preinstall
+    else
+        echo "(no executable 'user-preinstall' script found)"
+    fi
+
     ###################################################
     # ubuntu nvidia GL drivers
     # https://docs.nvidia.com/deploy/cuda-compatibility/index.html#use-the-right-compat-package
     echo "Installing user packages: ${NVIDIA_PKG}"
     [ -z "${NVIDIA_PKG}" ] || apt -y install ${NVIDIA_PKG}
-    apt -y install xterm glmark2 glmark2-es2 #debug
-        
-    # X/GL general dependencies
-    apt -y install x11-apps mesa-utils liburdfdom-model libglib2.0-0
 
-    dpkg -i debs/virtualgl_3.0_amd64.deb || apt -y -f install
+    # X/GL general dependencies
+    apt -y install wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0
+
+    dpkg -i debs/virtualgl_3.0.1_amd64.deb || apt -y -f install
 
     ###################################################
     # python needs compiler suite
-    apt -y install wget build-essential sudo git # gdb
+    #apt -y install build-essential sudo git # gdb
+    # debug
+    #apt -y install glmark2 glmark2-es2 #debug
 
     ###################################################
     # python environment
@@ -74,8 +82,6 @@ From: ubuntu:20.04
         [ -d venv ] || python3 -m venv ${ROOT}/venv
         . ${ROOT}/venv/bin/activate
         pip install -r /hostpwd/requirements.txt
-        cd /hostpwd
-        /user-postinstall
 
     else
 
@@ -86,6 +92,8 @@ From: ubuntu:20.04
 
     fi
 
+    cd /hostpwd
+    /user-postinstall
 
 ##### TEST
 
@@ -99,16 +107,8 @@ From: ubuntu:20.04
     export DEBIAN_FRONTEND=noninteractive
 
 
-# ??? apptainer run sifile /// ./sifile
 %runscript
-    . ${PREFIX1}/etc/profile.d/conda.sh
-    conda activate ${PREFIX2}
-    python3 --version
-    cd cosypose
-    python3 -m cosypose.scripts.run_cosypose_eval --config tless-siso --debug
+    /run-in-container
 
-# ??? apptainer exec siffile
-%startscript
-    . ${PREFIX1}/etc/profile.d/conda.sh
-    conda activate ${PREFIX2}
-    python3 --version
+#%startscript
+#    /run-in-container

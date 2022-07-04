@@ -1,0 +1,16 @@
+#!/bin/sh
+
+app=${PWD##*/}
+sifpwd=$(cd ..; pwd)
+
+cat << EOF
+
+1. Current directory must contain the following directory with your data inside
+
+    ${app}/
+
+2. Run command:
+
+    apptainer run --bind $(pwd):${HOME} ${sifpwd}/${app}.sif
+
+EOF

@@ -1,6 +1,10 @@
 #!/bin/bash -e
 
-run=${1-$(pwd)/run-in-container}
+if [ -z "${1}" ]; then
+    run=$(pwd)/run-in-container
+else
+    run="${@}"
+fi
 
 APPDIR=${PWD}/generated
 APPNAME=${PWD##*/}

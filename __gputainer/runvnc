@@ -36,7 +36,7 @@ logapp=$(pwd)/log-stdout-${id}.txt
 
 rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
 
-echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '../__gputainer/run 2>&1 | tee ${logapp}'" > ${startup}
+echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '../__gputainer/run \"${@}\" 2>&1 | tee ${logapp}'" > ${startup}
 chmod +x ${startup}
 
 touch ${passwordfile}

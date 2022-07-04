@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sif="$1"
+if [ ! -r "${sif}" ]; then
+    echo "$0: '${sif}' not found"
+    exit 1
+fi
+
+apptainer run --bind .:${HOME} ${sif}
