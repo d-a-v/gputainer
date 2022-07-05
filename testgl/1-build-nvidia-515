@@ -1,0 +1,1 @@
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/testgl  ../__gputainer/build

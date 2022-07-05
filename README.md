@@ -9,7 +9,7 @@ This environment is desinged to help running GPU & EGL applications in a SLURM e
 
     On the server:
 
-    - [apptainer](https://github.com/apptainer/apptainer/releases/download/v1.0.2/apptainer_1.0.2_amd64.deb) (or [latest release](https://github.com/apptainer/apptainer/releases))
+    - [apptainer](https://github.com/apptainer/apptainer/releases/) (debian package in [this repository](__gputainer/debs))
     - [VirtualGL](https://www.virtualgl.org) (debian package in [this repository](__gputainer/debs))
     - [TurboVNC](https://www.turbovnc.org) server (debian package in [this repository](__gputainer/debs))
 
@@ -22,12 +22,10 @@ This environment is desinged to help running GPU & EGL applications in a SLURM e
     The only tested setup so far was to enable the three insecure questions:
 
         - if they are enabled: stop gdm / lightdm
+        - run `/opt/VirtualGL/bin/vglserver_config`
         - select option 1
-        - answer yes
-        - answer yes
-        - answer yes
-        - exit
-        - if required, restart gdm / lightdm.
+        - answer yes / no / no / no / X  (insecure, testing)
+        - restart gdm / lightdm.
 
 - Configure Apptainer users by updating `/etc/subuid` and `/etc/subgid`
 

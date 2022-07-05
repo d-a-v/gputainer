@@ -42,8 +42,8 @@ From: ubuntu:20.04
     echo "Installing user packages: ${NVIDIA_PKG}"
     [ -z "${NVIDIA_PKG}" ] || apt -y install ${NVIDIA_PKG}
 
-    # X/GL general dependencies
-    apt -y install wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0
+    # X/GL and download general dependencies
+    apt -y install git wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0
 
     dpkg -i debs/virtualgl_3.0.1_amd64.deb || apt -y -f install
 
