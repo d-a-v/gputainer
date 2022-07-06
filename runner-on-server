@@ -1,0 +1,18 @@
+#!/bin/sh
+
+root=$(cd ${0%/*}; pwd)
+
+help ()
+{
+    echo "Please try '${root}/runner-for-client' instead"
+    exit 1
+}
+
+app=${1}
+[ -z "${SSH_TTY}" -o -z "${app}" ] && help ${0}
+shift
+
+set -e
+
+cd ${root}/${app}
+../__gputainer/runvnc "$@"
