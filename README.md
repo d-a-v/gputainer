@@ -47,3 +47,24 @@ A short while after running the start script, a message will display :
 `/opt/TurboVNC/bin/vncviewer -password 11111 -noreconnect -nonewconn -scale auto the-gpu-server:n`
 
 This command must be copy-pasted on your local console to see the application running on the distant GPU.
+
+## All-in-one run command
+
+A "single command" started on user's desktop without GPU capabilities to start&watch everything running remotely:
+
+First time, get the command to issue later on your local desktop:
+```
+$ ssh remote
+$ cd /path/to/gputainer
+$ ./runner-for-client
+
+This script must be started on your desktop host with:
+scp ... && ./runner-for-client ...
+where application name is one of:
+testgl
+...
+
+$ exit
+```
+
+When the application is builded on server, the `scp...` line can be copy-pasted on your local desktop.
