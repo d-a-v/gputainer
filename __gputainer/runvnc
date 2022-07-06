@@ -1,26 +1,39 @@
 #!/bin/bash
 
+# this script should be symlinked from application directory
+[ -d ../__gputainer ] || cd ${0%/*}
+
 # !!!!! properly configure VirtualGL !!!!!
 # DOC: # https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
 
 if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
-    # get last number from /dev/dri/card* list
-    export CUDA_VISIBLE_DEVICES=$(cd /dev/dri; echo card* | sed 's/.*\(.\)$/\1/')
-    echo "for testing:" 1>&2
+    # SLURM is supposed to set this
+    # so we are started by hand
+    echo "===============================" 1>&2
+    echo "CUDA_VISIBLE_DEVICES IS NOT SET" 1>&2
+    echo "finding one for testing"         1>&2
+    echo "===============================" 1>&2
+    for card in /dev/dri/card*; do
+        if /opt/VirtualGL/bin/eglinfo ${card} | grep vendor.*NVIDIA; then
+            #export CUDA_VISIBLE_DEVICES=$(echo ${card} | sed 's/.*\(.\)$/\1/')
+            dri=${card}
+            break
+        fi
+    done
 fi
-echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
-
-id=${SLURM_JOBID-deleteme}
-
-first_cuda=${CUDA_VISIBLE_DEVICES%%,*}   # 2,3,4,5 => 2
-export dri=/dev/dri/card${first_cuda}
-
+if [ -z "${dri}" ]; then
+    first_cuda=${CUDA_VISIBLE_DEVICES%%,*}   # 2,3,4,5 => 2
+    dri=/dev/dri/card${first_cuda}
+fi
 if [ ! -r "$dri" ]; then
-    echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}  =>  '${dri}' is not accessible  ?" 1>&2
+    echo "device '${dri}' is not accessible  ?" 1>&2
     exit 1
 fi
-vgl_options="-d ${dri}"
+echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
+echo "DRI card is '${dri}'" 1>&2
 
+vgl_options="-d ${dri}"
+id=${SLURM_JOBID-deleteme}
 
 # account's HOME might not be accessible, but it must exist
 [ -d ${HOME} ] || export HOME=$(pwd)/.temphome-$(whoami)
