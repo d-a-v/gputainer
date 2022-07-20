@@ -1,3 +1,41 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fa822b6cbd13977faa953b55885f3e589fdc2497cd0cc9ee7d6e98c236101b72
-size 1220
+set -ex
+
+extpython=true
+
+APPDIR=${APP%/*}
+APPNAME=${APP##*/}
+
+echo APP=${APP}
+echo APPDIR=${APPDIR}
+echo APPNAME=${APPNAME}
+
+if [ -z "${APP}" ]; then
+    echo "\${APP} must point to an application directory (environment.yaml, requirements.txt)"
+    exit 1
+fi
+
+if ${extpython}; then
+    opts="--sandbox --bind ${APPDIR}/generated/PYTHAINER:/pyenv"
+    mkdir -p ${APPDIR}/generated/PYTHAINER
+fi
+
+if [ ! -x ${APPDIR}/user-postinstall ]; then
+    echo "Could not find an executable shell script '${APPDIR}/user-postinstall'"
+    echo "(an empty one may be created)"
+    exit 1
+fi
+
+if [ -z "${NVIDIA}" ]; then
+    echo "shell variable 'NVIDIA' should list ubuntu packages (like 'libnvidia-gl-510 nvidia-utils-510' or 'nvidia-340')"
+    exit 1
+fi
+
+# exports apptainer
+export APPTAINER_APPDIR=${APPDIR}/generated
+export APPTAINERENV_NVIDIA_PKG="${NVIDIA}"
+export APPTAINERENV_APPNAME="${APPNAME}"
+export APPTAINERENV_NEED_CUDNN="${NEED_CUDNN}"  # empty, or 10.2 or 11.6 only are available at the time of writing
+
+mkdir -p ${APPDIR}/generated
+cd ../__gputainer
+apptainer build --fakeroot ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sif app.def

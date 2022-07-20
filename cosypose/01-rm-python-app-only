@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:da6560f002591eafc5b5c1e287e8245d05b1bd4680af75668c6f0fca3dba9200
-size 31
+rm -rf generated/PYTHAINER/app

@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:823caef85ddf9acca5132ab1b87f7ec79a2f7982af314bcfaa728304f2b77b1f
-size 90
+pip install seaborn
+pip install selenium==3.8.0
+conda install -y phantomjs -c conda-forge

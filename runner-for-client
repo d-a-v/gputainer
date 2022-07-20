@@ -1,3 +1,61 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e9a2bb75f94a14f60336e7a499d776680c974166c61eef112c99934b474de2e2
-size 1460
+#!/bin/bash
+
+root=$(cd ${0%/*}; pwd)
+name=${0##*/}
+vnc=/opt/TurboVNC/bin/vncviewer
+
+help ()
+{
+    if [ -d ${root}/__gputainer ]; then
+        cat << EOF
+
+This script must be started on your desktop host with:
+
+    scp ${LOGNAME}@$(hostname):${root}/${name} . && ./${0##*/}  ${LOGNAME}@$(hostname)  ${root}  <application-name>
+
+where application name is one of:
+
+$(cd ${root}; for d in *; do [ -d ${d} ] && echo ${d}; done | grep -v ^__)
+
+EOF
+    else
+        cat << EOF
+usage: ./${name} ${LOGNAME}@$(hostname) <path> <application-name>
+EOF
+    fi
+    exit 1
+}
+
+if [ ! -x ${vnc} ]; then
+    echo "TurboVNC must be installed ('${vnc}')"
+    exit 1
+fi
+
+server=${1}
+path=${2}
+app=${3}
+[ -z "${app}" -o -d "${root}/__gputainer" ] && help ${0}
+shift 3
+
+set -e
+
+running=false
+ssh -t ${server} ${path}/runner-on-server ${app} "${@}" | while read line; do
+    if echo "${line}" | grep ${vnc} > /dev/null; then
+        if ! ${running} ; then
+            running=true
+            echo "Starting VNC client"
+            echo "  ${line}"
+            ( ${line} 2>&1 & vncpid=$!; echo $! >&3 ) 3>vncpid | while read vncline; do
+                echo -e "vncclient($(<vncpid)) -- ${vncline}\r"
+                if echo "${vncline}" | grep "Connection reset by peer"; then
+                    echo Killing VNC client $(<vncpid)
+                    kill $(<vncpid)
+                    break
+                fi
+            done
+        fi
+    fi
+done
+
+echo "Remote runner stopped"

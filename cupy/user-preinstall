@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:06674eb3af8008410b5bd92fd40763a080f824c08615182f6db9061b4a5d980c
-size 417
+#!/bin/sh -x
+
+apt -y install gnupg
+getaptkey(){ gpg --keyserver ${KEYSERVER-keyserver.ubuntu.com} --recv-keys "$1" && gpg -a --export "$1" | apt-key add -; }
+getaptkey A4B469963BF863CC 
+
+echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-cuda.list
+apt update
+apt -y install cuda-10-2 libcublas10 cuda-nvrtc-10-2 cuda-cusparse-10-2 cuda-cudart-10-2

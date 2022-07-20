@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:52647f7f19040f0f5571675189121aa83bf33c4d438469b8839777be5d6fa608
-size 37
+pygame
+PyOpenGL
+aenum
+pybullet
+numpy

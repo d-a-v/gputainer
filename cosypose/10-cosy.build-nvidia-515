@@ -4,4 +4,4 @@ if [ ! -r cosypose/README.md ]; then
     git submodule update --init --recursive
 fi
 
-NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/cosypose  ../__gputainer/build
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cosypose  ../__gputainer/build

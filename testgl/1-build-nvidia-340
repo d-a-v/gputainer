@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:32b9ce2338e80ce7c364a7388cde5092ce9f9cd9a96da3fbc310d4705c2b3ddb
-size 61
+NVIDIA="nvidia-340"  APP=$(pwd)/testgl  ../__gputainer/build

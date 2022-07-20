@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:602477e11d5c20bfed54b24e5e172ae904e1c67ec85adb1e5b1cef5a8c69640f
-size 383
+#!/bin/sh -e
+
+user=${1}
+if [ -z "${user}" ]; then
+    echo "syntax: $0 <user>" 1>&2
+    exit 1
+fi
+uid=$(id -u ${user})
+gid=$(id -g ${user})
+for f in /etc/sub[ug]id; do
+    if [ -r ${f} ]; then
+        if grep "^${user}:" ${f} > /dev/null; then
+            echo "${user} is already set in ${f}"
+        else
+            echo "${user}:${uid}00000:99999" >> ${f}
+        fi
+    fi
+done

@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:10ca41c4ea9e679ebd1fd62ad8be799adb2f087ba5ef25d8a6fa216d1da17816
-size 211
+#!/bin/bash -x
+
+echo "DRI in container:"
+ls -alr /dev/dri
+echo "DISPLAY in container: '${DISPLAY}'"
+
+ls -al /tmp/.X11-unix
+
+. ${pyenv-/pyenv/venv/bin/activate}
+cd testgl
+
+python cube.py
+python hello_pybullet.py

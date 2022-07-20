@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:85536813bf475556debe02326899e15fcc72d2e97176377d4a01d5b0a2aee036
-size 13
+cupy-cuda102

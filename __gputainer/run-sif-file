@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:593eab1129a539de74e099ba686425f8b4ddee51c32035688241e170c3dc5b02
-size 136
+#!/bin/bash
+
+sif="$1"
+if [ ! -r "${sif}" ]; then
+    echo "$0: '${sif}' not found"
+    exit 1
+fi
+
+apptainer run --bind .:${HOME} ${sif}

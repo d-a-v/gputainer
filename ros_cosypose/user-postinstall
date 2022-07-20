@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:138c0f9e14c6308c453194d3bd849fff32181cf53f3408ffba43123f6e1ce53c
-size 325
+#!/bin/bash -ex
+
+echo POSTINSTALL: setup ros-cosypose
+
+. /pyenv/conda/etc/profile.d/conda.sh
+conda activate /pyenv/app
+
+apt -y install make   # for catkin
+
+cd /hostpwd/ros_cosypose/ros_cosypose
+catkin clean -b -y
+catkin build
+
+cd /hostpwd/ros_cosypose/generated
+[ -L ros_cosypose.sif ] || ln -s cosypose.sif ros_cosypose.sif

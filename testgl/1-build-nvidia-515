@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:715ad6c739005870d9ce3ef806300a66b99a0971a313ea5cbad8d9da587ea545
-size 84
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/testgl  ../__gputainer/build
