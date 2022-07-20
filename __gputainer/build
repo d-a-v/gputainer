@@ -33,7 +33,8 @@ fi
 # exports apptainer
 export APPTAINER_APPDIR=${APPDIR}/generated
 export APPTAINERENV_NVIDIA_PKG="${NVIDIA}"
+export APPTAINERENV_APPNAME="${APPNAME}"
 
 mkdir -p ${APPDIR}/generated
 cd ../__gputainer
-apptainer build --fakeroot ${opts} --bind ${APPDIR}/${APPNAME}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sif app.def
+apptainer build --fakeroot ${opts} --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sif app.def

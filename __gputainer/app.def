@@ -14,6 +14,7 @@ From: ubuntu:20.04
     ${APPTAINER_APPDIR}/../user-postinstall /user-postinstall
     ${APPTAINER_APPDIR}/../run-in-container /run-in-container
     debs/virtualgl_3.0.1_amd64.deb
+    debs/cudnn-local-repo-ubuntu2004-8.4.0.27_1.0-1_amd64.deb
 
 # build commands
 %post
@@ -43,9 +44,20 @@ From: ubuntu:20.04
     [ -z "${NVIDIA_PKG}" ] || apt -y install ${NVIDIA_PKG}
 
     # X/GL and download general dependencies
-    apt -y install git wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0
+    # windows manager: icewm
+    apt -y install git wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0 icewm
 
-    dpkg -i debs/virtualgl_3.0.1_amd64.deb || apt -y -f install
+    # local debian packages not available in repos
+    #debs="debs/virtualgl_3.0.1_amd64.deb debs/cudnn-local-repo-ubuntu2004-8.4.0.27_1.0-1_amd64.deb"
+    debs="debs/*.deb"
+    dpkg -i ${debs} || apt -y -f install
+    rm -f ${debs}
+
+    # cudnn pkgs from debs/cudnn-local-repo-ubuntu*deb:
+    #dpkg -i /var/cudnn-local*/*deb || apt -y -f install
+    dpkg -i /var/cudnn-local*/libcudnn8_*.deb || apt -y -f install
+
+    rm -f /var/cudnn-local*/*deb
 
     ###################################################
     # python needs compiler suite
@@ -59,14 +71,14 @@ From: ubuntu:20.04
     mkdir -p ${ROOT}
     cd ${ROOT}
 
-    if [ -r /hostpwd/environment.yaml ]; then
+    if [ -r /hostpwd/${APPNAME}/environment.yaml ]; then
 
         if [ ! -d ${PREFIX1} ]; then
             [ -r Miniconda3-latest-Linux-x86_64.sh ] || wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
             bash Miniconda3-latest-Linux-x86_64.sh -b -p ${PREFIX1}
         fi
         if [ ! -d ${PREFIX2} ]; then
-            conda env create --file /hostpwd/environment.yaml --prefix ${PREFIX2}
+            conda env create --file /hostpwd/${APPNAME}/environment.yaml --prefix ${PREFIX2}
         fi
         # update .bashrc:
         conda init bash
@@ -74,14 +86,17 @@ From: ubuntu:20.04
         # build application
         ## ubuntu runs dash incompatible with "shopt" command run in conda init script so .bashrc cannot be sourced
         ## also PS1 must be set to something or .bashrc's first line will discard the whole script
-        bash -c "PS1=blah; . ${HOME}/.bashrc; conda activate ${PREFIX2}; export PATH=${PREFIX2}/bin:${PATH}; cd /hostpwd; python3 setup.py install; /user-postinstall"
+        bash -c "PS1=blah; . ${HOME}/.bashrc; conda activate ${PREFIX2}; export PATH=${PREFIX2}/bin:${PATH}; cd /hostpwd/${APPNAME}; python3 setup.py install; /user-postinstall"
 
-    elif [ -r /hostpwd/requirements.txt ]; then
+    elif [ -r /hostpwd/${APPNAME}/requirements.txt ]; then
 
         apt -y install python3 python3-venv
         [ -d venv ] || python3 -m venv ${ROOT}/venv
         . ${ROOT}/venv/bin/activate
-        pip install -r /hostpwd/requirements.txt
+        pip install -r /hostpwd/${APPNAME}/requirements.txt
+
+        cd /hostpwd/${APPNAME}
+        /user-postinstall
 
     else
 
@@ -90,10 +105,11 @@ From: ubuntu:20.04
         echo "================================================================"
         sleep 5
 
+        cd /hostpwd/${APPNAME}
+        /user-postinstall
+
     fi
 
-    cd /hostpwd
-    /user-postinstall
 
 ##### TEST
 

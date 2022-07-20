@@ -34,7 +34,7 @@ echo "DISPLAY on host: '${DISPLAY}'"
 
 #xeyes -geometry +500+0 &
 
-set -x
+#set -x
 
 export APPTAINERENV_MYHOME=${HOME}  # for user-run-prepare
 time apptainer exec --nv --writable --bind $(pwd)/generated/PYTHAINER:/pyenv --bind $(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp generated/${APPNAME}.sif $(pwd)/../__gputainer/user-run-prepare ${run}

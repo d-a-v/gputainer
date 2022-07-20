@@ -1,0 +1,13 @@
+#!/bin/bash -ex
+
+if [ ! -r ros_cosypose/README.md ]; then
+    git clone git@gitlab.laas.fr:cosyplan/ros_cosypose.git
+fi
+
+if [ ! -r cosypose/README.md ]; then
+    git clone https://github.com/ydepledt/cosypose
+    cp ros_cosypose/environment.yaml cosypose/
+fi
+
+# build cosypose
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cosypose  ../__gputainer/build

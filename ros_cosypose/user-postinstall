@@ -1,0 +1,10 @@
+#!/bin/bash -ex
+
+echo POSTINSTALL: setup ros-cosypose
+
+. /pyenv/conda/etc/profile.d/conda.sh
+conda activate /pyenv/app
+
+cd /hostpwd/ros_cosypose
+catkin clean -b -y
+catkin build
