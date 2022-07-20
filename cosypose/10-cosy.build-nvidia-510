@@ -1,7 +1,3 @@
-#!/bin/bash -ex
-
-if [ ! -r cosypose/README.md ]; then
-    git submodule update --init --recursive
-fi
-
-NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/cosypose  ../__gputainer/build
+version https://git-lfs.github.com/spec/v1
+oid sha256:b11bfa3d3a1ae339c8de202eb3886f4d941d4d89eeca683675eb7b7cba8884c6
+size 188

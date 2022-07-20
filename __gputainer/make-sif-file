@@ -1,12 +1,3 @@
-#!/bin/bash
-
-sif=`cd generated; echo *.sif`
-if [ ! -d "generated/${sif}" ]; then
-    echo "generated/${sif}/ is not existing!"
-    exit 1
-fi
-
-set -ex
-
-rsync -a generated/PYTHAINER/* generated/${sif}/pyenv/
-sudo apptainer build ../${sif} generated/${sif}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f9e830f8893e6379c1292868820e1c2719c5f33ca773de0d61f8d17dfa2d5f6a
+size 254

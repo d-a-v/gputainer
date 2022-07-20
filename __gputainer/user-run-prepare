@@ -1,13 +1,3 @@
-#!/bin/bash
-
-# $HOME can be an artificial place, and
-# - it is not kept up through apptainer
-# - it is forbidden to set it up via APPTAINERENV_HOME
-# so it is transmitted through APPTAINERENV_MYHOME:
-if [ -z "${MYHOME}" ]; then
-    echo "\$MYHOME (from APPTAINERENV_MYHOME) should be set!"
-else
-    export HOME=${MYHOME}
-fi
-
-"$@"
+version https://git-lfs.github.com/spec/v1
+oid sha256:ccac8c539412bf30ba324bbe71ebcb1c520af3bcf6e344c2bae0dfdc0c2fdbbe
+size 330

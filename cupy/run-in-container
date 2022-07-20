@@ -1,12 +1,3 @@
-#!/bin/bash -x
-
-unset CUDA_VISIBLE_DEVICES    # necessary !?
-
-nvidia-smi
-
-. ${pyenv-/pyenv/venv/bin/activate}
-
-python -c 'import cupy;print("cupy.__version__=", cupy.__version__, "\ncupy.cuda.is_available()=", cupy.cuda.is_available(), "\ncupy.cuda.Device(0).compute_capability=", cupy.cuda.Device(0).compute_capability);'
-
-cd cupy
-python test.py
+version https://git-lfs.github.com/spec/v1
+oid sha256:60e2db085f4ae34ee4d33cd4c15d3a85c78d7239cfbef8531b14bc441f6ef815
+size 347

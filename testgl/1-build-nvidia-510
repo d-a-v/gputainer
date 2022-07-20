@@ -1,1 +1,3 @@
-NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/testgl  ../__gputainer/build
+version https://git-lfs.github.com/spec/v1
+oid sha256:37c5f955e56b6c91657c41f9997fba20b7367a8468496af554b3133ed7fcacb6
+size 84

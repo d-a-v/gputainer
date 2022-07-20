@@ -1,8 +1,3 @@
-cuda
-    https://docs.nvidia.com/cuda/index.html
-
-virtualgl, turbovnc
-    https://virtualgl.org/
-    /opt/VirtualGL/bin/eglinfo /dev/dri/card01234...
-
-https://gist.github.com/cyberang3l/422a77a47bdc15a0824d5cca47e64ba2
+version https://git-lfs.github.com/spec/v1
+oid sha256:ff2ed67589793f64ece7132178f4df4f816a477090f291963f881dadb039570a
+size 219

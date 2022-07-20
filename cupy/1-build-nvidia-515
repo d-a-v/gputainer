@@ -1,2 +1,3 @@
-#NVIDIA="libnvidia-gl-510 nvidia-utils-510"  APP=$(pwd)/cupy  ../__gputainer/build
-NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cupy  ../__gputainer/build
+version https://git-lfs.github.com/spec/v1
+oid sha256:19c7f9e49687b6c8c5eaa4b9e5d489ec6b41df750110cdb9c17d8b48d633280f
+size 165
