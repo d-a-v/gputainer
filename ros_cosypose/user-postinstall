@@ -7,9 +7,9 @@ conda activate /pyenv/app
 
 apt -y install make   # for catkin
 
-cd /hostpwd/ros_cosypose/ros_cosypose
-catkin clean -b -y
+cd /hostpwd/ros_cosypose
+catkin clean -b -y || true
 catkin build
 
-cd /hostpwd/ros_cosypose/generated
+cd /hostpwd/generated
 [ -L ros_cosypose.sif ] || ln -s cosypose.sif ros_cosypose.sif
