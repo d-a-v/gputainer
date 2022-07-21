@@ -72,3 +72,36 @@ $ exit
 ```
 
 When the application is builded on server, the `scp ... testgl` line can be copy-pasted on your local desktop.
+
+## Tweaking inside the container
+
+Upon build, the subdirectory `<app>/generated/` is created.  It contains two
+directories `PYTHAINER/` and `<app>.sif/`.  `<app>.sif` should be a file in
+a real world, and can later be converted, but is really a directory.  This
+directory is rebuilded everytime when restarting the `build` script, and is
+the root filesystem of the container.
+
+`PYTHAINER` is not rebuilded everytime, it has to be removed for that.  This
+allows to incrementally tune the the build scripts.  This directory is the
+python root container for `conda` or `PyPI` and can sometimes take ages to
+be fully rebuilt.
+
+When running a container with `./xxxx-runvnc`, the `run-in-container` script is started.
+
+To manually check the container state after a build and run an xterm
+instead, here is an example with the `testgl` example:
+
+- On the gpu server: `./2-runvnc bash`
+
+  Wait for the `RUN IT` message and copy the vncviewer line
+
+- On your local host, paste the command
+
+- In the opened xterm inside vnc, start another `xterm -geometry 160x60 bash`
+
+- In the new xterm, type `cat run-in-container` and copy-paste the few lines which activate the python environment (if/generally applicable).
+
+- Play, nothing that
+    - you are not root in the container filesystem (no `apt install` allowed)
+    - you can modify the python environment (`pip install`) and this will be persistent
+      but not reproducible until you add the commands in the `user-postinstall` script.
