@@ -26,21 +26,21 @@ EOF
     exit 1
 }
 
-if [ ! -x ${vnc} ]; then
-    echo "TurboVNC must be installed ('${vnc}')"
-    exit 1
-fi
-
 server=${1}
 path=${2}
 app=${3}
 [ -z "${app}" -o -d "${root}/__gputainer" ] && help ${0}
 shift 3
 
+if [ ! -x ${vnc} ]; then
+    echo "TurboVNC must be installed ('${vnc}')"
+    exit 1
+fi
+
 set -e
 
 running=false
-ssh -t ${server} ${path}/runner-on-server ${app} "${@}" | while read line; do
+ssh -t ${server} ${path}/__gputainer/runner-on-server ${app} "${@}" | while read line; do
     if echo "${line}" | grep ${vnc} > /dev/null; then
         if ! ${running} ; then
             running=true
