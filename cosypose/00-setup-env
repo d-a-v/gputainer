@@ -2,7 +2,7 @@
 
 if [ ! -r 00-setup-env.vars.sh ]; then
     echo "====================================================================================="
-    echo "Copying default denvironment template, please review and adjust '00-setup-env.vars.sh"
+    echo "Copying default environment template, please review and adjust '00-setup-env.vars.sh'"
     echo "====================================================================================="
     cp 00-setup-env.vars-template.sh 00-setup-env.vars.sh
     exit 0
@@ -14,6 +14,6 @@ if [ ! -r cosypose/README.md ]; then
     git clone ${cosypose}
     (cd cosypose; git submodule update --init)
 
-    cp ${condaenv} cosypose/environment.yaml
+    [ -z "${condaenv}" ] || cp ${condaenv} cosypose/environment.yaml
     ln -s ${local_data} cosypose/local_data
 fi
