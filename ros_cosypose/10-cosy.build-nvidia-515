@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+./00-setup-env
+
 if [ ! -r ros_cosypose/README.md ]; then
     git clone git@gitlab.laas.fr:cosyplan/ros_cosypose.git
 fi
