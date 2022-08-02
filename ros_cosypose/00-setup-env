@@ -3,6 +3,7 @@
 if [ ! -r 00-setup-env.vars.sh ]; then
     echo "====================================================================================="
     echo "Copying default environment template, please review and adjust '00-setup-env.vars.sh'"
+    echo "then restart me ($0)"
     echo "====================================================================================="
     cp 00-setup-env.vars-template.sh 00-setup-env.vars.sh
     exit 0
