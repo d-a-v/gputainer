@@ -39,6 +39,7 @@ else
 fi
 
 #python -m cosypose.scripts.run_cosypose_eval --config tless-siso
-python -m cosypose.scripts.prediction_script
+#python -m cosypose.scripts.prediction_script
+python -m cosypose.scripts.run_cosypose_eval --config ycbv
 
 kill $eyes

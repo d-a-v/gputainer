@@ -22,7 +22,7 @@ sbatch ${sbatchopt} << eof
 #SBATCH --output=stdout.txt
 #SBATCH --error=stderr.txt
 
-./2-runvnc
+./20-runvnc
 
 eof
 )
