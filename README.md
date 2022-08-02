@@ -27,7 +27,7 @@ This environment is designed to help running GPU & EGL applications in a SLURM e
   - answer yes / no / no / no / X  (insecure, testing)
   - restart gdm / lightdm.
 
-- Configure Apptainer users by updating `/etc/subuid` and `/etc/subgid`
+- [This is no longer necessary](https://github.com/apptainer/apptainer/releases/tag/v1.1.0-rc.1) Configure Apptainer users by updating `/etc/subuid` and `/etc/subgid`
 
   A helper is provided:
 
