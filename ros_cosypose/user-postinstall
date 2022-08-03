@@ -12,4 +12,4 @@ catkin clean -b -y || true
 catkin build
 
 cd /hostpwd/generated
-[ -L ros_cosypose.sif ] || ln -s cosypose.sif ros_cosypose.sif
+[ -L ros_cosypose.sifdir ] || ln -s cosypose.sifdir ros_cosypose.sifdir
