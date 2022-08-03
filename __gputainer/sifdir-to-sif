@@ -1,7 +1,9 @@
 #!/bin/bash
 
-sifdir=`cd generated; echo *.sifdir`
-if [ ! -d "generated/${sifdir}" ]; then
+APPNAME=${PWD##*/}
+
+sifdir=`cd generated; echo ${APPNAME}.sifdir`
+if [ ! -d "generated/${sifdir}/." ]; then
     echo "generated/${sifdir}/ is not existing!"
     exit 1
 fi
