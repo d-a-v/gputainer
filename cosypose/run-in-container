@@ -12,7 +12,6 @@ export EGL_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES%%,*}    # example: 2,3,4 => 2
 echo inside apptainer DISPLAY=${DISPLAY}
 echo CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}
 echo EGL_VISIBLE_DEVICES=${EGL_VISIBLE_DEVICES}
-echo XAUTHORITY=${XAUTHORITY}
 ls -alr /dev/dri
 
 icewm & wm=$!

@@ -31,4 +31,4 @@ ls -alr /dev/dri
 echo "DISPLAY on host: '${DISPLAY}'"
 
 export APPTAINERENV_MYHOME=${HOME}
-time apptainer exec --nv --writable --bind $(pwd)/generated/PYTHAINER:/pyenv --bind $(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp generated/${APPNAME}.sif $(pwd)/../__gputainer/user-run-prepare ${run}
+time apptainer exec --nv --writable --bind $(pwd)/generated/PYTHAINER:/pyenv --bind $(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp generated/${APPNAME}.sifdir $(pwd)/../__gputainer/user-run-prepare ${run}

@@ -38,5 +38,4 @@ export APPTAINERENV_NEED_CUDNN="${NEED_CUDNN}"  # empty, or 10.2 or 11.6 only ar
 
 mkdir -p ${APPDIR}/generated
 cd ../__gputainer
-#apptainer build --fakeroot ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sif app.def
-apptainer build ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sif app.def
+apptainer build ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sifdir app.def

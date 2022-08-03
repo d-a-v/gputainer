@@ -1,0 +1,14 @@
+#!/bin/bash
+
+sifdir=`cd generated; echo *.sifdir`
+if [ ! -d "generated/${sifdir}" ]; then
+    echo "generated/${sifdir}/ is not existing!"
+    exit 1
+fi
+
+set -ex
+
+mkdir -p generated/${sifdir}/pyenv/
+mv generated/PYTHAINER/{app,conda} generated/${sifdir}/pyenv/
+apptainer build ${sifdir%*dir} generated/${sifdir}
+mv generated/${sifdir}/pyenv/{app,conda} generated/PYTHAINER/
