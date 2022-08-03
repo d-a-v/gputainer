@@ -1,35 +1,49 @@
-#!/bin/bash -x
+#!/bin/bash
 
 . /pyenv/conda/etc/profile.d/conda.sh
 conda activate /pyenv/app
 
-# PATH and LD_LIBRARY_PATH from python_path ?
-#export PATH=/pyenv/app/bin:${PATH}
-#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/pyenv/app/lib/python3.7/site-packages/torch/lib
-
+# pybullet wants EGL_VISIBLE_DEVICES
 export EGL_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES%%,*}    # example: 2,3,4 => 2
+
+# cuda debugging
+#export CUDA_LAUNCH_BLOCKING=1
 
 echo inside apptainer DISPLAY=${DISPLAY}
 echo CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}
+echo EGL_VISIBLE_DEVICES=${EGL_VISIBLE_DEVICES}
 echo XAUTHORITY=${XAUTHORITY}
-echo PWD=$(pwd)
 ls -alr /dev/dri
 
 icewm & wm=$!
 xeyes & eyes=$!
 
+# show cuda is running
 python -c 'import torch;print("torch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
 
-export CUDA_LAUNCH_BLOCKING=1
-
 cd cosypose
+echo PWD=$(pwd)
 
-[ -d build ] || python setup.py install
-(cd deps/bullet3; [ -d build ] || python setup.py install)
-(cd deps/job-runner; [ -d build ] || python setup.py install)
+if true; then
+    # building but not installing because apptainer filesystem might be not writable
+    [ -d build ] || python setup.py build
+    (cd deps/bullet3; [ -d build ] || python setup.py build)
+    (cd deps/job-runner; [ -d build ] || python setup.py build)
+    # path is necessary
+    pylib=$(cd build; ls | grep ^lib | head -1)
+    export PYTHONPATH=$(pwd)/build/${pylib}:$(pwd)/deps/bullet3/build/${pylib}:$(pwd)/deps/job-runner/build/${pylib}:${PYTHONPATH}
+    export LD_LIBRARY_PATH=$(pwd)/build/${pylib}:$(pwd)/deps/bullet3/build/${pylib}:$(pwd)/deps/job-runner/build/${pylib}:${LD_LIBRARY_PATH}
+else
+    # cosypose is not integrated into apptainer image to allow for development
+    [ -d build ] || python setup.py install
+    (cd deps/bullet3; [ -d build ] || python setup.py install)
+    (cd deps/job-runner; [ -d build ] || python setup.py install)
+fi
 
 #python -m cosypose.scripts.run_cosypose_eval --config tless-siso
 #python -m cosypose.scripts.prediction_script
 python -m cosypose.scripts.run_cosypose_eval --config ycbv
 
-kill $wm $eyes
+ret=$?
+kill -9 $wm $eyes
+(exit $ret)

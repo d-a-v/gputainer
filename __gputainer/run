@@ -12,29 +12,23 @@ APPNAME=${PWD##*/}
 echo APPDIR=${APPDIR}
 echo APPNAME=${APPNAME}
 
-# CUDA_VISIBLE_DEVICES should be 0 or 1 or 0,1 ...
+# passing CUDA_VISIBLE_DEVICES
+# set it to 0 (arbitrary) if not currently set
 export APPTAINERENV_CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES-0}
 
-# tmp in tmp with X11 socket
-if false; then
-    ### XXX FIXME not working
+if true; then
+    # map /tmp from sub-tmp with linked X11 socket
     tmp=/tmp/apptainer-tmp-$(date +%y-%m-%d-%H-%M-%S)
-    mkdir -p ${tmp}
-    cp -a /tmp/.X11-unix ${tmp}/
+    mkdir -p ${tmp}/.X11-unix
+    ln /tmp/.X11-unix/* ${tmp}/.X11-unix/
 else
+    # share /tmp and X11 socket
     tmp=/tmp
 fi
-
-ls -al ${tmp}/.X11-unix
-
 
 echo "DRI on host:"
 ls -alr /dev/dri
 echo "DISPLAY on host: '${DISPLAY}'"
 
-#xeyes -geometry +500+0 &
-
-#set -x
-
-export APPTAINERENV_MYHOME=${HOME}  # for user-run-prepare
+export APPTAINERENV_MYHOME=${HOME}
 time apptainer exec --nv --writable --bind $(pwd)/generated/PYTHAINER:/pyenv --bind $(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind ${tmp}:/tmp generated/${APPNAME}.sif $(pwd)/../__gputainer/user-run-prepare ${run}

@@ -11,9 +11,24 @@ python -c 'import torch;print("torch.__version__=", torch.__version__, "\ntorch.
 
 export CUDA_LAUNCH_BLOCKING=1
 
-(cd cosypose; [ -d build ] || python setup.py install)
-(cd cosypose/deps/bullet3; [ -d build ] || python setup.py install)
-(cd cosypose/deps/job-runner; [ -d build ] || python setup.py install)
+if true; then
+    cd cosypose
+    # build but not setting up because apptainer's sif file might be not writable
+    # then setting PATH below
+    [ -d build ] || python setup.py build
+    (cd deps/bullet3; [ -d build ] || python setup.py build)
+    (cd deps/job-runner; [ -d build ] || python setup.py build)
+    pylib=$(cd build; ls | grep ^lib | head -1)
+    #export PYTHONPATH=$(pwd)/build/${pylib}:$(pwd)/deps/bullet3/build/${pylib}:$(pwd)/deps/job-runner/build/${pylib}:${PYTHONPATH}
+    #export PYTHON_PATH=${PYTHONPATH}
+    #export LD_LIBRARY_PATH=$(pwd)/build/${pylib}:$(pwd)/deps/bullet3/build/${pylib}:$(pwd)/deps/job-runner/build/${pylib}:${LD_LIBRARY_PATH}
+    echo PYTHONPATH=${PYTHONPATH}
+    cd ..
+else
+    (cd cosypose; [ -d build ] || python setup.py install)
+    (cd cosypose/deps/bullet3; [ -d build ] || python setup.py install)
+    (cd cosypose/deps/job-runner; [ -d build ] || python setup.py install)
+fi
 
 source ros_cosypose/devel/setup.bash
 
