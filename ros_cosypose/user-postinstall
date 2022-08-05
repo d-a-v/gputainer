@@ -1,15 +1,7 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
-echo POSTINSTALL: setup ros-cosypose
+# for catkin
+apt -y install make
 
-. /pyenv/conda/etc/profile.d/conda.sh
-conda activate /pyenv/app
-
-apt -y install make   # for catkin
-
-cd /hostpwd/ros_cosypose
-catkin clean -b -y || true
-catkin build
-
-cd /hostpwd/generated
+cd ${APPDIR}/generated
 [ -L ros_cosypose.sifdir ] || ln -s cosypose.sifdir ros_cosypose.sifdir

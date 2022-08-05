@@ -31,11 +31,14 @@ if [ -z "${NVIDIA}" ]; then
 fi
 
 # exports apptainer
-export APPTAINER_APPDIR=${APPDIR}/generated
+export APPTAINER_APPDIR="${APPDIR}"
 export APPTAINERENV_NVIDIA_PKG="${NVIDIA}"
+export APPTAINERENV_APPDIR="${APPDIR}"
 export APPTAINERENV_APPNAME="${APPNAME}"
 export APPTAINERENV_NEED_CUDNN="${NEED_CUDNN}"  # empty, or 10.2 or 11.6 only are available at the time of writing
 
 mkdir -p ${APPDIR}/generated
-cd ../__gputainer
-apptainer build ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sifdir app.def
+#cd ../__gputainer
+#apptainer build ${opts} --bind ${PWD}/debs:/debs --bind ${APPDIR}:/hostpwd --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sifdir app.def
+cd ${APPDIR}
+apptainer build ${opts} --bind ${PWD}/../__gputainer/debs:/debs --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sifdir ../__gputainer/app.def

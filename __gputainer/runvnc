@@ -1,6 +1,14 @@
 #!/bin/bash
 
-# this script should be symlinked from application directory
+# this script can run an apptainer sif file of the same name
+scriptname=${0##*/}
+basename=${scriptname%.*}
+if [ -r ${basename}.sif ]; then
+    SIF="${basename}.sif"
+    APPTAINEROPTS=""
+fi
+
+# .. or should be symlinked from a "gputainer" application directory
 [ -d ../__gputainer ] || cd ${0%/*}
 
 # !!!!! properly configure VirtualGL !!!!!
@@ -33,23 +41,96 @@ echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
 echo "DRI card is '${dri}'" 1>&2
 
 vgl_options="-d ${dri}"
-id=${SLURM_JOBID-deleteme}
 
 # account's HOME might not be accessible, but it must exist
 [ -d ${HOME} ] || export HOME=$(pwd)/.temphome-$(whoami)
 
 mkdir -p ${HOME}/.vnc
 
+id=deleteme-${SLURM_JOBID-$$}
 password1=$$
 password2=view  # view-only password
 passwordfile=${HOME}/.vnc/vnctmp-passwd-${id}
-startup=${HOME}/.vnc/vnctmp-startup-${id}
-logvnc=${HOME}/.vnc/vnctmp-vnc-${id}.txt
-logapp=$(pwd)/log-stdout-${id}.txt
+startup=${HOME}/.vnc/vnctmp-vncstartup-${id}
+logvnc=${HOME}/.vnc/vnctmp-vnclog-${id}.txt
+logapp=${PWD}/log-stdout-${id}.txt
+fakehomescript=${HOME}/.vnc/vnctmp-vncstartup2-${id}
+runscript=${HOME}/.vnc/vnctmp-vncstartup3-${id}
 
-rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
+if [ -z "${SIF}" ]; then
+    dir=${PWD}/generated/${PWD##*/}.sifdir
+    if [ -d "${dir}" ]; then
+        SIF=${dir}
+        APPTAINEROPTS="--writable --bind ${PWD}/generated/PYTHAINER:/pyenv"
+    else
+        SIF="unknown-SIF-location"
+    fi
+fi
 
-echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '../__gputainer/run \"${@}\" 2>&1 | tee ${logapp}'" > ${startup}
+rm -f ${HOME}/.vnc/vnctmp* ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
+
+############################################################
+touch ${fakehomescript}
+chmod +x ${fakehomescript}
+cat > ${fakehomescript} << EOF
+#!/bin/bash
+
+# \$HOME can be an artificial place, and
+# - it is not kept up through apptainer
+# - it is forbidden to set it up via APPTAINERENV_HOME
+# so it is transmitted through APPTAINERENV_MYHOME:
+if [ -z "\${MYHOME}" ]; then
+    echo "\\$MYHOME (from APPTAINERENV_MYHOME) should be set!"
+else
+    export HOME=\${MYHOME}
+fi
+[ -z "\${MYPWD}" ] || cd \${MYPWD}
+
+"\$@"
+EOF
+############################################################
+touch ${runscript}
+chmod +x ${runscript}
+cat > ${runscript} << EOF
+#!/bin/bash -e
+
+if [ -z "\${1}" ]; then
+    run=\$(pwd)/run-in-container
+else
+    run="\${@}"
+fi
+
+APPDIR=\${PWD}/generated
+APPNAME=\${PWD##*/}
+
+echo APPDIR=\${APPDIR}
+echo APPNAME=\${APPNAME}
+
+# passing CUDA_VISIBLE_DEVICES
+# set it to 0 (arbitrary) if not currently set
+export APPTAINERENV_CUDA_VISIBLE_DEVICES=\${CUDA_VISIBLE_DEVICES-0}
+
+if true; then
+    # map /tmp from sub-tmp with linked X11 socket
+    tmp=/tmp/apptainer-tmp-\$(date +%y-%m-%d-%H-%M-%S)
+    mkdir -p \${tmp}/.X11-unix
+    ln /tmp/.X11-unix/* \${tmp}/.X11-unix/
+else
+    # share /tmp and X11 socket
+    tmp=/tmp
+fi
+
+echo "DRI on host:"
+ls -alr /dev/dri
+echo "DISPLAY on host: '\${DISPLAY}'"
+
+export APPTAINERENV_MYHOME=\${HOME}
+export APPTAINERENV_MYPWD=\${PWD}
+time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind \${tmp}:/tmp ${SIF} ${fakehomescript} \${run}
+EOF
+############################################################
+
+echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '${runscript} \"${@}\" 2>&1 | tee ${logapp}'" > ${startup}
 chmod +x ${startup}
 
 touch ${passwordfile}

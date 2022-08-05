@@ -8,9 +8,12 @@ if [ ! -d "generated/${sifdir}/." ]; then
     exit 1
 fi
 
-set -ex
+trap "mv generated/${sifdir}/pyenv/{app,conda} generated/PYTHAINER/" EXIT
 
-mkdir -p generated/${sifdir}/pyenv/
+mkdir -p transportable generated/${sifdir}/pyenv/
+cp ../__gputainer/runvnc transportable/${APPNAME}.runme
+cp run-in-container transportable/
+chmod +x transportable/${APPNAME}.runme
 mv generated/PYTHAINER/{app,conda} generated/${sifdir}/pyenv/
-apptainer build ${sifdir%*dir} generated/${sifdir}
-mv generated/${sifdir}/pyenv/{app,conda} generated/PYTHAINER/
+apptainer build transportable/${sifdir%*dir} generated/${sifdir}
+[ -x transportable/${sifdir%*dir} ] && chmod -x transportable/${sifdir%*dir}

@@ -25,6 +25,7 @@ if true; then
     [ -d build ] || python setup.py build
     (cd deps/bullet3; [ -d build ] || python setup.py build)
     (cd deps/job-runner; [ -d build ] || python setup.py build)
+    (cd ../ros_cosypose; rm -rf build; python setup.py build)
     # path is necessary
     pylib=$(cd build; ls | grep ^lib | head -1)
     export PYTHONPATH=$(pwd)/build/${pylib}:$(pwd)/deps/bullet3/build/${pylib}:$(pwd)/deps/job-runner/build/${pylib}:${PYTHONPATH}
@@ -35,10 +36,14 @@ else
     (cd cosypose; [ -d build ] || python setup.py install)
     (cd cosypose/deps/bullet3; [ -d build ] || python setup.py install)
     (cd cosypose/deps/job-runner; [ -d build ] || python setup.py install)
+    (cd ros_cosypose; [ -d build ] || python setup.py install)
 fi
 
-source ros_cosypose/devel/setup.bash
+cd ../ros_cosypose
+catkin clean -b -y || true
+catkin build
 
+source ros_cosypose/devel/setup.bash
 export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:$(pwd)/ros_cosypose
 export PATH=$(pwd)/ros_cosypose/scripts:${PATH}
 

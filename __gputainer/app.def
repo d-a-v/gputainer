@@ -4,16 +4,16 @@ From: ubuntu:20.04
 %setup
     mkdir ${APPTAINER_ROOTFS}/local
     mkdir ${APPTAINER_ROOTFS}/pyenv
-    mkdir ${APPTAINER_ROOTFS}/hostpwd
     mkdir ${APPTAINER_ROOTFS}/net
     mkdir ${APPTAINER_ROOTFS}/debs
+    mkdir ${APPTAINER_ROOTFS}/hostpwd
     ln -s /net/pfcalcul/pfcalcul ${APPTAINER_ROOTFS}/pfcalcul
 
 # copy these local files into container
 %files
-    ${APPTAINER_APPDIR}/../user-preinstall /user-preinstall
-    ${APPTAINER_APPDIR}/../user-postinstall /user-postinstall
-    ${APPTAINER_APPDIR}/../run-in-container /run-in-container
+    ${APPTAINER_APPDIR}/user-preinstall /user-preinstall
+    ${APPTAINER_APPDIR}/user-postinstall /user-postinstall
+    ${APPTAINER_APPDIR}/run-in-container /run-in-container
 
 # build commands
 %post
@@ -44,7 +44,7 @@ From: ubuntu:20.04
 
     # X/GL and download general dependencies
     # windows manager: icewm
-    apt -y install git wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0 icewm
+    apt -y install git wget curl xterm x11-apps mesa-utils liburdfdom-model libglib2.0-0 icewm libxcb-keysyms1
 
     # local debian packages not available in repos
 
@@ -68,14 +68,14 @@ From: ubuntu:20.04
     mkdir -p ${ROOT}
     cd ${ROOT}
 
-    if [ -r /hostpwd/${APPNAME}/environment.yaml ]; then
+    if [ -r ${APPDIR}/${APPNAME}/environment.yaml ]; then
 
         if [ ! -d ${PREFIX1} ]; then
             [ -r Miniconda3-latest-Linux-x86_64.sh ] || wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
             bash Miniconda3-latest-Linux-x86_64.sh -b -p ${PREFIX1}
         fi
         if [ ! -d ${PREFIX2} ]; then
-            conda env create --file /hostpwd/${APPNAME}/environment.yaml --prefix ${PREFIX2}
+            conda env create --file ${APPDIR}/${APPNAME}/environment.yaml --prefix ${PREFIX2}
         fi
         # update .bashrc:
         conda init bash
@@ -83,16 +83,16 @@ From: ubuntu:20.04
         # build application
         ## ubuntu runs dash incompatible with "shopt" command run in conda init script so .bashrc cannot be sourced
         ## also PS1 must be set to something or .bashrc's first line will discard the whole script
-        bash -c "PS1=blah; . ${HOME}/.bashrc; conda activate ${PREFIX2}; export PATH=${PREFIX2}/bin:${PATH}; cd /hostpwd/${APPNAME}; python3 setup.py install; /user-postinstall"
+        bash -c "PS1=blah; . ${HOME}/.bashrc; conda activate ${PREFIX2}; export PATH=${PREFIX2}/bin:${PATH}; cd ${APPDIR}/${APPNAME}; python3 setup.py install; /user-postinstall"
 
-    elif [ -r /hostpwd/${APPNAME}/requirements.txt ]; then
+    elif [ -r ${APPDIR}/${APPNAME}/requirements.txt ]; then
 
         apt -y install python3 python3-venv
         [ -d venv ] || python3 -m venv ${ROOT}/venv
         . ${ROOT}/venv/bin/activate
-        pip install -r /hostpwd/${APPNAME}/requirements.txt
+        pip install -r ${APPDIR}/${APPNAME}/requirements.txt
 
-        cd /hostpwd/${APPNAME}
+        cd ${APPDIR}
         /user-postinstall
 
     else
@@ -102,7 +102,7 @@ From: ubuntu:20.04
         echo "================================================================"
         sleep 5
 
-        cd /hostpwd/${APPNAME}
+        cd ${APPDIR}
         /user-postinstall
 
     fi
