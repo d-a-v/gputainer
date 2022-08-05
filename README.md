@@ -107,3 +107,11 @@ instead, here is an example with the `testgl` example:
     - you are not root in the container filesystem (no `apt install` allowed)
     - you can modify the python environment (`pip install`) and this will be persistent
       but not reproducible until you add the commands in the `user-postinstall` script.
+
+## Convert container to file
+
+A script called `../__gputainer/sifdir-to-sif` will build and store
+`transportable/<app>.sif` (and `<app>.runme` along with user's
+`run-in-container`) out of `generated/` directory content.  External
+directories such as repositories cloned in setup scripts are not included
+in the resulting `sif` file.
