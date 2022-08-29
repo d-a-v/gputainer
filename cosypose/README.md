@@ -8,6 +8,9 @@
 The generated image is an environment to be able to run `cosypose`.
 `cosypose` will not be included in the generated image, it stays external and modifiable.
 
+The `run-in-container` script is also external from the apptainer image: it can be modified before running the container.
+By default it runs the example "Reproducing single-view results - YCB-Video".
+
 Once generated, directories look like:
 ```
 ...gputainer/cosypose$ ls -l generated/
@@ -19,8 +22,7 @@ See below for running it.
 
 If desired, once transformed into a plain SIF file, directories look like:
 ```
-...gputainer/cosypose>ls -lh transportable/
-total 8818396
+...gputainer/cosypose$ ls -lh transportable/
 lrwxrwxrwx 1 x x   11 Aug  5 15:32 cosypose -> ../cosypose
 -rwxr-xr-x 1 x x 4.8K Aug  5 15:31 cosypose.runme
 -rw-r--r-- 1 x x 8.5G Aug  5 15:37 cosypose.sif
