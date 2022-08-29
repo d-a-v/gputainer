@@ -1,9 +1,7 @@
 
 ## Notes
 
-`apptainer` must be installed on the gpu server.
-
-`turbovnc` client must be installed on the viewer host.
+See [main readme](../README.md) for prerequisites.
 
 The generated image is an environment to be able to run `cosypose`.
 `cosypose` will not be included in the generated image, it stays external and modifiable.
