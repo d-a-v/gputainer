@@ -2,4 +2,4 @@
 
 ./00-setup-env
 
-NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cosypose  ../__gputainer/build
+NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cosypose  NEED_CUDNN=11.6  ../__gputainer/build

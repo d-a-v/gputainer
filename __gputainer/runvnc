@@ -127,6 +127,8 @@ echo "DISPLAY on host: '\${DISPLAY}'"
 
 export APPTAINERENV_MYHOME=\${HOME}
 export APPTAINERENV_MYPWD=\${PWD}
+export NVIDIA_VISIBLE_DEVICES=all
+set -x
 time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind \${tmp}:/tmp ${SIF} ${fakehomescript} \${run}
 EOF
 ############################################################
