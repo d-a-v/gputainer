@@ -63,6 +63,7 @@ if [ -z "${SIF}" ]; then
         SIF=${dir}
         APPTAINEROPTS="--writable --bind ${PWD}/generated/PYTHAINER:/pyenv"
     else
+        echo "error: cannot find directory '${dir}'" 1>&2
         SIF="unknown-SIF-location"
     fi
 fi

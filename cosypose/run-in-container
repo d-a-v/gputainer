@@ -18,6 +18,7 @@ icewm & wm=$!
 xeyes & eyes=$!
 
 # show cuda is running
+nvidia-smi
 python -c 'import torch;print("torch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
 
 cd cosypose
