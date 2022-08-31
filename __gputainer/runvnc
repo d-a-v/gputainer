@@ -81,7 +81,7 @@ cat > ${fakehomescript} << EOF
 # - it is forbidden to set it up via APPTAINERENV_HOME
 # so it is transmitted through APPTAINERENV_MYHOME:
 if [ -z "\${MYHOME}" ]; then
-    echo "\\$MYHOME (from APPTAINERENV_MYHOME) should be set!"
+    echo "MYHOME (from APPTAINERENV_MYHOME) should be set!"
 else
     export HOME=\${MYHOME}
 fi
@@ -116,7 +116,7 @@ if true; then
     tmp=/tmp/apptainer-tmp-\$(date +%y-%m-%d-%H-%M-%S)
     mkdir -p \${tmp}/.X11-unix
     for x in /tmp/.X11-unix/*; do
-        [ ! -d "${x}" ] && ln ${x} \${tmp}/.X11-unix/ || true
+        [ ! -d "\${x}" ] && ln \${x} \${tmp}/.X11-unix/ || true
     done
 else
     # share /tmp and X11 socket
@@ -135,6 +135,7 @@ time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/n
 EOF
 ############################################################
 
+# this command is run on host inside an xterm and starts the 'runscript' which starts apptainer
 echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '${runscript} \"${@}\" 2>&1 | tee ${logapp}'" > ${startup}
 chmod +x ${startup}
 
@@ -156,11 +157,29 @@ while [ ! -r ${logvnc} ]; do
 done
 
 echo -e "========== LOGFILE: \n${logapp}\n"
-tail -f ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" & shower=$!
 
-tail -f ${logvnc} | sed -ne "/Killing Xvnc process ID/q"
-echo -e "==========\n"
+if true; then
 
-#cat ${logvnc}
+    # dirty hack, see below after 'else'
 
-kill ${shower}
+    sleep 2
+    sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" ${logvnc}
+    while true; do
+        grep 'Killing Xvnc process ID' ${logvnc} && break
+        sleep 2
+    done
+    echo -e "==========\n"
+
+else
+
+    #XXXDEBUGME
+    # not working with slurm ?
+    # but working when started by hand
+    #   (debug so far: 'tail file | sed -ne' is always empty)
+
+    tail -n +0 -F ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" & shower=$!
+    tail -n +0 -F ${logvnc} | sed -ne "/Killing Xvnc process ID/q"
+    echo -e "==========\n"
+    kill ${shower}
+
+fi

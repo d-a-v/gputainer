@@ -40,10 +40,11 @@ else
     (cd deps/job-runner; [ -d build ] || python setup.py install)
 fi
 
-#python -m cosypose.scripts.run_cosypose_eval --config tless-siso
-#python -m cosypose.scripts.prediction_script
 python -m cosypose.scripts.run_cosypose_eval --config ycbv
 
+# remove trailing files that might conflict with a further run for another user
+# useful in case /tmp is shared by host and container
+# harmless otherwise
 rm -rf /tmp/cosypose_job
 
 ret=$?
