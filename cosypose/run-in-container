@@ -19,7 +19,7 @@ xeyes & eyes=$!
 
 # show cuda is running
 nvidia-smi
-python -c 'import sys,torch;print("python=", sys.version, "torch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
+python -c 'import sys,torch;print("python=", sys.version, "\ntorch.__version__=", torch.__version__, "\ntorch.cuda.device_count()=", torch.cuda.device_count(), "\ntorch.cuda.is_available()=", torch.cuda.is_available(), "\ntorch.version.cuda=", torch.version.cuda, "\ntorch.backends.cudnn.version()=", torch.backends.cudnn.version());'
 
 cd cosypose
 echo PWD=$(pwd)
@@ -43,6 +43,8 @@ fi
 #python -m cosypose.scripts.run_cosypose_eval --config tless-siso
 #python -m cosypose.scripts.prediction_script
 python -m cosypose.scripts.run_cosypose_eval --config ycbv
+
+rm -rf /tmp/cosypose_job
 
 ret=$?
 kill -9 $wm $eyes
