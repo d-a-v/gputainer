@@ -12,7 +12,7 @@ fi
 . ./00-setup-env.vars.sh
 
 if [ ! -r cosypose/README.md ]; then
-    git clone ${cosypose}
+    git clone ${cosypose_branch} ${cosypose}
     (cd cosypose; git submodule update --init)
     (cd cosypose; for p in ../patches/*.patch; do patch -Np1 < ${p}; done)
 

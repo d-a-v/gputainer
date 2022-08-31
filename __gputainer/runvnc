@@ -111,12 +111,13 @@ echo APPNAME=\${APPNAME}
 # set it to 0 (arbitrary) if not currently set
 export APPTAINERENV_CUDA_VISIBLE_DEVICES=\${CUDA_VISIBLE_DEVICES-0}
 
-if false; then
-    ## XXXFIXME BUG hard link is impossible when previous runs leave /tmp/.X11-unix/X1 (rwxrwxrwx) but belonging to another user
+if true; then
     # map /tmp from sub-tmp with linked X11 socket
     tmp=/tmp/apptainer-tmp-\$(date +%y-%m-%d-%H-%M-%S)
     mkdir -p \${tmp}/.X11-unix
-    ln /tmp/.X11-unix/* \${tmp}/.X11-unix/
+    for x in /tmp/.X11-unix/*; do
+        [ ! -d "${x}" ] && ln ${x} \${tmp}/.X11-unix/ || true
+    done
 else
     # share /tmp and X11 socket
     tmp=/tmp
