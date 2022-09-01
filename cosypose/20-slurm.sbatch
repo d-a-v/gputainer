@@ -7,7 +7,9 @@
 #SBATCH --output=stdout.txt
 #SBATCH --error=stderr.txt
 #SBATCH --mem=50G
+#SBATCH --gres=gpu:1
 
-##SBATCH --gres=gpu:${gpu}
+##SBATCH --gres=gpu:rtx_a6000:1
+##SBATCH --gres=gpu:a30:1
 
 ./20-runvnc
