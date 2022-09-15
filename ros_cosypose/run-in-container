@@ -39,9 +39,11 @@ else
     (cd ros_cosypose; [ -d build ] || python setup.py install)
 fi
 
-cd ../ros_cosypose
-catkin clean -b -y || true
-catkin build
+(
+    cd ros_cosypose
+    catkin clean -b -y || true
+    catkin build
+)
 
 source ros_cosypose/devel/setup.bash
 export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:$(pwd)/ros_cosypose

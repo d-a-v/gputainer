@@ -1,0 +1,31 @@
+
+cat << EOF
+
+This script has to be run before build, outside from container
+--------------------------------------------------------------
+
+- This script does nothing in this example
+
+- This script would download the testgl/ content
+  (which is already included as example)
+
+
+
+When starting building the container, using one of the -build-nvidia-
+scripts,
+
+- user-preinstall is executed inside the container before main build
+- main build is started (in this example, testgl/requirements.txt with PyPI,
+                         environment.yaml with conda can also be managed)
+- user-postinstall is executed inside the container after build
+
+
+
+The application is started by the -runvnc- script:
+- a vnc server is started
+- instructions to view it is given on console
+- container is started
+- the local and always outside-from-container `run-in-container` script is run by the container
+
+
+EOF

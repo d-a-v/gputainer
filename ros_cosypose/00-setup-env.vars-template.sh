@@ -1,12 +1,9 @@
 
-set -e
-
 # cosypose repository
 cosypose=https://github.com/ylabbe/cosypose
+#cosypose_branch="-b master"
 
-# conda environment
-# use empty variable to use upstream environment
-#condaenv=""       
+# cosypose's conda environment got from ros_cosypose
 condaenv=ros_cosypose/environment.yaml
 
 # cosypose local_data

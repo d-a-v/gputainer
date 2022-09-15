@@ -1,19 +1,6 @@
 #!/bin/bash -ex
 
-./00-setup-env
+# using 'APP=cosypose' below
+# (cosyplan's catkin build will be started by user-postinstall script also runned from within the container)
 
-if [ ! -r ros_cosypose/README.md ]; then
-    git clone git@gitlab.laas.fr:cosyplan/ros_cosypose.git
-fi
-
-if [ ! -r cosypose/README.md ]; then
-    git clone https://github.com/ydepledt/cosypose
-    (cd cosypose; git submodule update --init)
-    cp ros_cosypose/environment.yaml cosypose/
-    
-fi
-
-# notice 'APP=cosypose' below
-
-# build cosypose first, ros_cosypose is built in postinstall file
 NVIDIA="libnvidia-gl-515 nvidia-utils-515"  APP=$(pwd)/cosypose  NEED_CUDNN=11.6  ../__gputainer/build

@@ -1,6 +1,4 @@
 
-set -e
-
 # cosypose repository
 cosypose=https://github.com/ylabbe/cosypose
 #cosypose_branch="-b master"
