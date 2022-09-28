@@ -25,7 +25,7 @@ The application is started by the -runvnc- script:
 - a vnc server is started
 - instructions to view it is given on console
 - container is started
-- the local and always outside-from-container `run-in-container` script is run by the container
+- the local and always outside-from-container \`run-in-container\` script is run by the container
 
 
 EOF
