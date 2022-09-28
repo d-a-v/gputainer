@@ -2,7 +2,7 @@
 
 # first get ros_cosyplan, which includes cosypose's environment.yaml
 if [ ! -r ros_cosypose/README.md ]; then
-    git clone git@gitlab.laas.fr:cosyplan/ros_cosypose.git
+    git clone https://gitlab.laas.fr/simple-robotics/ros_cosypose.git
 fi
 
 # use cosypose setup procedure
