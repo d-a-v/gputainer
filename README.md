@@ -1,7 +1,7 @@
 
 # Headless & batch runtime environment helper for building and starting GPU applications requiring a display, using Apptainer (ex-singularity)
 
-This environment is designed to help running GPU & EGL applications in a SLURM environment.
+This environment is designed to help running GPU & EGL applications in a SLURM environment. It is organized in different subparts ([cosypose](https://github.com/d-a-v/gputainer/tree/master/cosypose), [cupy](https://github.com/d-a-v/gputainer/tree/master/cupy), [ros_cosypose](https://github.com/d-a-v/gputainer/tree/master/ros_cosypose), [testgl](https://github.com/d-a-v/gputainer/tree/master/testgl)). The following section describes the general prerequisites. For each subpart, please refer to its dedicated readme.
 
 ## Prerequisites on a debian-like environment
 
