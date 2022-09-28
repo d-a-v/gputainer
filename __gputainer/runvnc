@@ -35,22 +35,26 @@ if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
     echo "CUDA_VISIBLE_DEVICES IS NOT SET" 1>&2
     echo "(running on $(hostname))"        1>&2
     echo "===============================" 1>&2
-    for card in /dev/dri/card*; do
-        if /opt/VirtualGL/bin/eglinfo ${card} | grep vendor.*NVIDIA; then
-            export CUDA_VISIBLE_DEVICES=$(echo ${card} | sed 's/.*\(.\)$/\1/')
-            dri=${card}
-            break
-        fi
-    done
+    # restricting to the first gpu when not started by slurm
+    export CUDA_VISIBLE_DEVICES=0
 fi
+
 if [ -z "${dri}" ]; then
+    # find the matching /dev/dri device driver
     first_cuda=${CUDA_VISIBLE_DEVICES%%,*}   # 2,3,4,5 => 2
-    dri=/dev/dri/card${first_cuda}
+
+    # this is wrong: (thanks nvidia)  dri=/dev/dri/card${first_cuda}
+
+    # associate nvidia gpu number to matching dri device
+    # why the hell is this driver not telling us the information more easily ?
+    dri=$(readlink -f /dev/dri/by-path/*$(nvidia-smi --id=${first_cuda} --query-gpu=pci.bus_id --format=csv,noheader | tr '[:upper:]' '[:lower:]' | cut -d: -f2-)*card)
 fi
-if [ ! -r "$dri" ]; then
+
+if [ ! -r "${dri}" ]; then
     echo "device '${dri}' is not accessible  ?" 1>&2
     exit 1
 fi
+
 echo "CUDA_VISIBLE_DEVICES is set to '${CUDA_VISIBLE_DEVICES}'" 1>&2
 echo "DRI card is '${dri}'" 1>&2
 
