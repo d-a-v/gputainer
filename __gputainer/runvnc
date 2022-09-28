@@ -14,12 +14,26 @@ fi
 # !!!!! properly configure VirtualGL !!!!!
 # DOC: # https://rawcdn.githack.com/VirtualGL/virtualgl/3.0/doc/index.html#hd006
 
+if [ ! -x /opt/VirtualGL/bin/eglinfo ]; then
+    echo "===============================" 1>&2
+    echo "VirtualGL is not installed !"    1>&2
+    echo "(running on $(hostname))"        1>&2
+    echo "===============================" 1>&2
+fi
+
+if [ -z "${SLURM_JOB_USER}" ]; then
+    echo "==============================="  1>&2
+    echo "Notice: not started by SLURM"     1>&2
+    echo "(running on $(hostname))"         1>&2
+    echo "==============================="  1>&2
+fi
+
 if [ -z "${CUDA_VISIBLE_DEVICES}" ]; then
     # SLURM is supposed to set this
     # so we are started by hand
     echo "===============================" 1>&2
     echo "CUDA_VISIBLE_DEVICES IS NOT SET" 1>&2
-    echo "finding one for testing"         1>&2
+    echo "(running on $(hostname))"        1>&2
     echo "===============================" 1>&2
     for card in /dev/dri/card*; do
         if /opt/VirtualGL/bin/eglinfo ${card} | grep vendor.*NVIDIA; then
