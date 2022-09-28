@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#!/bin/bash
+
+if [ -z "${APPTAINER_ENVIRONMENT}" ]; then
+    echo "This script cannot be run directly and must be started by the application container"
+    exit 1
+fi
 
 echo "DRI in container:"
 ls -alr /dev/dri

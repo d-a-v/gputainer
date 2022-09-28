@@ -1,5 +1,10 @@
 #!/bin/bash -x
 
+if [ -z "${APPTAINER_ENVIRONMENT}" ]; then
+    echo "This script cannot be run directly and must be started by the application container"
+    exit 1
+fi
+
 unset CUDA_VISIBLE_DEVICES    # necessary !?
 
 nvidia-smi
