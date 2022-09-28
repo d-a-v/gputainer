@@ -68,7 +68,7 @@ if [ -z "${SIF}" ]; then
     fi
 fi
 
-rm -f ${HOME}/.vnc/vnctmp* ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
+rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
 
 ############################################################
 touch ${fakehomescript}
