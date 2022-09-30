@@ -1,0 +1,2 @@
+rm -f log-stdout-* stderr-*txt stdout-*txt task2submit-* A-monitor-is-running--delete-this-file-to-stop-it
+echo 'rm -rf generated   # <- if needed'

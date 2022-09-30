@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH --job-name=genlauncher
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=gpu
+#SBATCH --mail-type=ALL
+#SBATCH --output=stdout-%j.txt
+#SBATCH --error=stderr-%j.txt
+#SBATCH --mem=5G
+#SBATCH --gres=gpu:1
+
+. ./env.sh
+
+if [ -z "${SLURM_JOB_NAME}" ]; then
+    echo "This script must be run with sbatch:"
+    echo "  ./2-initial-submitter"
+    exit 1
+fi
+
+../__gputainer/runvnc $(pwd)/generator-in-container
