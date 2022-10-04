@@ -7,6 +7,7 @@ From: ubuntu:20.04
     mkdir ${APPTAINER_ROOTFS}/net
     mkdir ${APPTAINER_ROOTFS}/debs
     mkdir ${APPTAINER_ROOTFS}/hostpwd
+    mkdir ${APPTAINER_ROOTFS}/home_local
     ln -s /net/pfcalcul/pfcalcul ${APPTAINER_ROOTFS}/pfcalcul
 
 # copy these local files into container

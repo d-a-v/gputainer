@@ -60,8 +60,13 @@ echo "DRI card is '${dri}'" 1>&2
 
 vgl_options="-d ${dri}"
 
-# account's HOME might not be accessible, but it must exist
-[ -d ${HOME} ] || export HOME=$(pwd)/.temphome-$(whoami)
+# account's HOME might not be accessible, but it must exist:
+# using variable TEMPHOME,
+# which will be also mapped to /home_local/ and used by some tools
+# like blender installer when home is not accessible.
+export TEMPHOME=${TEMPHOME-$(pwd)/.temphome}
+# on HPC clusters, ${HOME} might be not accessible:
+[ -d ${HOME} ] || export HOME=${TEMPHOME}/$(whoami)
 
 mkdir -p ${HOME}/.vnc
 
@@ -149,7 +154,7 @@ export APPTAINERENV_MYHOME=\${HOME}
 export APPTAINERENV_MYPWD=\${PWD}
 export NVIDIA_VISIBLE_DEVICES=all
 set -x
-time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind \${tmp}:/tmp ${SIF} ${fakehomescript} \${run}
+time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/net --bind /local:/local --bind \${tmp}:/tmp --bind ${TEMPHOME}:/home_local ${SIF} ${fakehomescript} \${run}
 EOF
 ############################################################
 
