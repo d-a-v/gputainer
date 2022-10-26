@@ -10,7 +10,6 @@ fi
 
 echo I am in a container:
 env|grep APPTAINER
-lsb_release -a
 
 id=genlauncher-${SLURM_JOBID-deleteme}
 
