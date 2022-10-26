@@ -17,4 +17,7 @@ if [ -z "${SLURM_JOB_NAME}" ]; then
     exit 1
 fi
 
+# do not start "ru-in-container" by default
+# but "generator-in-container" instead:
+
 ../__gputainer/runvnc $(pwd)/generator-in-container

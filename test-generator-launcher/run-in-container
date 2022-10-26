@@ -1,1 +1,2 @@
 echo "I am empty and I will not be run"
+echo "check ./3-generator which will run ./generator-in-container through SLURM"
