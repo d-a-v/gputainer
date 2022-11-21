@@ -14,5 +14,7 @@ ls -al /tmp/.X11-unix
 . ${pyenv-/pyenv/venv/bin/activate}
 cd testgl
 
+set -x # show commands
+
 python cube.py
 python hello_pybullet.py

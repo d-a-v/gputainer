@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+mkdir transportable
+
 APPNAME=${PWD##*/}
 
 sifdir=`cd generated; echo ${APPNAME}.sifdir`
@@ -8,12 +11,20 @@ if [ ! -d "generated/${sifdir}/." ]; then
     exit 1
 fi
 
-trap "mv generated/${sifdir}/pyenv/{app,conda} generated/PYTHAINER/" EXIT
-
-mkdir -p transportable generated/${sifdir}/pyenv/
+# vnc runner is the entry point
 cp ../__gputainer/runvnc transportable/${APPNAME}.runme
-cp run-in-container transportable/
 chmod +x transportable/${APPNAME}.runme
-mv generated/PYTHAINER/{app,conda} generated/${sifdir}/pyenv/
-apptainer build transportable/${sifdir%*dir} generated/${sifdir}
-[ -x transportable/${sifdir%*dir} ] && chmod -x transportable/${sifdir%*dir}
+
+# duplicate runner in container
+cp run-in-container transportable/
+
+# temporarily move pyenv/ content to sifdir
+# in order to build a self-contained sif container
+mkdir -p generated/${sifdir}/pyenv/
+trap 'mv generated/${sifdir}/pyenv/* generated/PYTHAINER/' EXIT
+mv generated/PYTHAINER/* generated/${sifdir}/pyenv/
+
+# build the sif container image
+sif=${sifdir%*dir}
+apptainer build transportable/${sif} generated/${sifdir}
+chmod -x transportable/${sif}

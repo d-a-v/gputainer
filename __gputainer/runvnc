@@ -60,17 +60,18 @@ echo "DRI card is '${dri}'" 1>&2
 
 vgl_options="-d ${dri}"
 
-# account's HOME might not be accessible, but it must exist:
+# account's HOME might not be accessible at running time
+# (on HPC clusters, ${HOME} might be not accessible)
+# but there must be one for apptainer:
 # using variable TEMPHOME,
 # which will be also mapped to /home_local/ and used by some tools
 # like blender installer when home is not accessible.
 export TEMPHOME=${TEMPHOME-$(pwd)/.temphome}
-# on HPC clusters, ${HOME} might be not accessible:
 [ -d ${HOME} ] || export HOME=${TEMPHOME}/$(whoami)
 
 mkdir -p ${HOME}/.vnc
 
-id=deleteme-${SLURM_JOBID-$$}
+id=deleteme-${SLURM_JOBID-pid$$}
 password1=$$
 password2=view  # view-only password
 passwordfile=${HOME}/.vnc/vnctmp-passwd-${id}
