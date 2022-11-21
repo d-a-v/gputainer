@@ -16,6 +16,10 @@ From: ubuntu:20.04
     ${APPTAINER_APPDIR}/user-postinstall /user-postinstall
     ${APPTAINER_APPDIR}/run-in-container /run-in-container
 
+%environment
+    export LANG=C
+    export LC_ALL=C
+
 # build commands
 %post
 
