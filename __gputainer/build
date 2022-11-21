@@ -30,6 +30,9 @@ if [ -z "${NVIDIA}" ]; then
     exit 1
 fi
 
+# use apt-cacher if locally installed
+[ -d /etc/apt-cacher ] && export APPTAINERENV_APT_PROXY=http://$(hostname):3142
+
 # exports apptainer
 export APPTAINER_APPDIR="${APPDIR}"
 export APPTAINERENV_NVIDIA_PKG="${NVIDIA}"

@@ -33,6 +33,10 @@ From: ubuntu:20.04
     export DEBIAN_FRONTEND=noninteractive
 
     ###################################################
+    if [ ! -z "${APT_PROXY}" ]; then
+        echo "Using APT proxy: ${APT_PROXY}"
+        echo "Acquire::http::Proxy \"${APT_PROXY}\";" > /etc/apt/apt.conf.d/00proxy
+    fi
     apt -y update
 
     if [ -x /user-preinstall ]; then
