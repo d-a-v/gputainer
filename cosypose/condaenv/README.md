@@ -3,7 +3,7 @@
 
   torch-latest
 
-  cherry-picked from EtienneAr's https://gitlab.laas.fr/cosyplan/ros_cosypose
+  cherry-picked from EtienneAr's https://gitlab.laas.fr/simple-robotics/ros_cosypose
 
 - `environment-1.8.1.yaml`
 

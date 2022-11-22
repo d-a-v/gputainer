@@ -3,6 +3,10 @@
 
 See [main readme](../README.md) for prerequisites.
 
+Walkthrough is described below (see 'Operations').
+
+### Testing container
+
 The generated image is an environment to be able to run `cosypose`.
 `cosypose` will not be included in the generated image, it stays external and modifiable.
 
@@ -16,26 +20,59 @@ drwxr-xr-x  4 x x 4096 Aug  5 15:37 PYTHAINER
 drwxr-xr-x 25 x x 4096 Aug  5 14:17 cosypose.sifdir
 ```
 
-See below for running it.
+See 'Operations' below for running it.
 
-If desired, once transformed into a plain SIF file, directories look like:
+### Transportable container
+
+If desired, the container can be transformed into a plain single SIF file.
+
+Still, directory `cosypose/` and script `./run-in-container` are being kept
+out from the container to allow further modification without rebuilding
+everything.
+
+`transportable/` will look like:
 ```
 ...gputainer/cosypose$ ls -lh transportable/
-lrwxrwxrwx 1 x x   11 Aug  5 15:32 cosypose -> ../cosypose
--rwxr-xr-x 1 x x 4.8K Aug  5 15:31 cosypose.runme
--rw-r--r-- 1 x x 8.5G Aug  5 15:37 cosypose.sif
--rwxr-xr-x 1 x x 1.9K Aug  5 15:31 run-in-container
+lrwxrwxrwx 1 x x   11 Nov 22 16:11 cosypose -> ../cosypose
+-rwxr-xr-x 1 x x 6.8K Nov 22 16:11 cosypose.runme
+-rw-r--r-- 1 x x 8.2G Nov 22 16:16 cosypose.sif
+-rwxr-xr-x 1 x x 2.2K Nov 22 16:11 run-in-container
+-rw-r--r-- 1 x x  196 Nov 22 16:25 slurm.sbatch
 ```
 
-`cosypose` directory (or in this example a symbolic link) is your cosypose git repository and must be in the local directory.
-
 ## Operations
- 
+
+### Testing container
+
+#### Python dependencies
+
 - First, execute `./00-setup-env`
 - Get your own cosypose's "`local_data/`" and set its path into `00-setup-env.vars.sh`
 - Run `./10-cosy.build-nvidia-515` which takes a while
 - Run `./20-runvnc`
 
-  Python dependencies inside `cosypose` will be compiled on the first run.
+#### Python dependencies for `cosypose/`
 
-  For next runs, they will be reused. They can be rebuilt by removing them first with `./01-rm-cosypose-python-builds`
+Python dependencies inside `cosypose/` will be compiled on the first run.
+
+For next runs, they will be reused.
+
+They can be rebuilt by removing them first with `./01-rm-cosypose-python-builds`
+
+### Transportable container
+
+The transportable SIF file is made from the `generated/` directory so the testing container must be built first.
+
+The `transportable/` directory is created by calling `../__gputainer/sifdir-to-sif`.
+
+*Important notice*
+==================
+
+After the first run, the `cosypose/` directory is prepared.
+
+If the transportable image is moved elesewhere, cloning `cosypose/` directory will not be enough to run it.
+It has to be:
+- cloned
+- with submodules updated
+- patched (see `patches/`)
+- with `local_data/` configured

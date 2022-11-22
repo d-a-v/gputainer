@@ -18,8 +18,23 @@ chmod +x transportable/${APPNAME}.runme
 # duplicate runner in container
 cp run-in-container transportable/
 
+# link the application directory which is,
+# on purpose, not internal to the container
+ln -s ../${APPNAME} transportable/
+
+# create a simple slurm file skeleton
+sbatchfile=transportable/slurm.sbatch
+[ -r ${sbatchfile} ] || cat << EOF > ${sbatchfile}
+#!/bin/sh
+#SBATCH --job-name=${APPNAME}
+#SBATCH please-fille-me-with-your-options
+
+# run application with optional custom executable
+# (or ./run-in-container will be executed)
+./${APPNAME}.runme "\$@"
+EOF
+
 # temporarily move pyenv/ content to sifdir
-# in order to build a self-contained sif container
 mkdir -p generated/${sifdir}/pyenv/
 trap 'mv generated/${sifdir}/pyenv/* generated/PYTHAINER/' EXIT
 mv generated/PYTHAINER/* generated/${sifdir}/pyenv/
@@ -28,3 +43,5 @@ mv generated/PYTHAINER/* generated/${sifdir}/pyenv/
 sif=${sifdir%*dir}
 apptainer build transportable/${sif} generated/${sifdir}
 chmod -x transportable/${sif}
+
+# the above 'trap' will move pyenv/ content back to PYTHAINER/

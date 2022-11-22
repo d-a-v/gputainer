@@ -71,15 +71,15 @@ export TEMPHOME=${TEMPHOME-$(pwd)/.temphome}
 
 mkdir -p ${HOME}/.vnc
 
-id=deleteme-${SLURM_JOBID-pid$$}
+id=${SLURM_JOBID-pid$$}
 password1=$$
 password2=view  # view-only password
-passwordfile=${HOME}/.vnc/vnctmp-passwd-${id}
-startup=${HOME}/.vnc/vnctmp-vncstartup-${id}
-logvnc=${HOME}/.vnc/vnctmp-vnclog-${id}.txt
-logapp=${PWD}/log-stdout-${id}.txt
-fakehomescript=${HOME}/.vnc/vnctmp-vncstartup2-${id}
-runscript=${HOME}/.vnc/vnctmp-vncstartup3-${id}
+passwordfile=${HOME}/.vnc/${id}-passwd
+startup=${HOME}/.vnc/${id}-vncstartup
+vncserverlog=${HOME}/.vnc/${id}-vncserverlog.txt
+appexecscriptlog=${PWD}/${id}-log.txt
+fakehomescript=${HOME}/.vnc/${id}-fakehomescript
+appexecscript=${HOME}/.vnc/${id}-appexecscript
 
 if [ -z "${SIF}" ]; then
     dir=${PWD}/generated/${PWD##*/}.sifdir
@@ -92,7 +92,7 @@ if [ -z "${SIF}" ]; then
     fi
 fi
 
-rm -f ${logvnc} ${logapp} ${logstderr} ${passwordfile} ${startup}
+rm -f ${vncserverlog} ${appexecscriptlog} ${logstderr} ${passwordfile} ${startup}
 
 ############################################################
 touch ${fakehomescript}
@@ -114,9 +114,9 @@ fi
 "\$@"
 EOF
 ############################################################
-touch ${runscript}
-chmod +x ${runscript}
-cat > ${runscript} << EOF
+touch ${appexecscript}
+chmod +x ${appexecscript}
+cat > ${appexecscript} << EOF
 #!/bin/bash -e
 
 if [ -z "\${1}" ]; then
@@ -159,37 +159,37 @@ time apptainer exec --nv ${APPTAINEROPTS} --bind \$(pwd):/hostpwd --bind /net:/n
 EOF
 ############################################################
 
-# this command is run on host inside an xterm and starts the 'runscript' which starts apptainer
-echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '${runscript} \"${@}\" 2>&1 | tee ${logapp}'" > ${startup}
+# this command is run on host inside an xterm and starts the 'appexecscript' which starts apptainer
+echo "cd $(pwd); vglrun ${vgl_options} xterm -geometry 160x60 -e bash -c '${appexecscript} \"${@}\" 2>&1 | tee ${appexecscriptlog}'" > ${startup}
 chmod +x ${startup}
 
 touch ${passwordfile}
 chmod go-rwx ${passwordfile}
 ( echo ${password1}; echo ${password2}; ) | /opt/TurboVNC/bin/vncpasswd -f >> ${passwordfile}
 
-/opt/TurboVNC/bin/vncserver -vgl -log ${logvnc} -rfbauth ${passwordfile} -xstartup ${startup}
+/opt/TurboVNC/bin/vncserver -vgl -log ${vncserverlog} -rfbauth ${passwordfile} -xstartup ${startup}
 
 waitcounter=10
-while [ ! -r ${logvnc} ]; do
+while [ ! -r ${vncserverlog} ]; do
     waitcounter=$((waitcounter - 1))
     if [ ${waitcounter} -eq 0 ]; then
         echo "Could not start vnc server?" 1>&2
         exit 1
     fi
-    echo "waiting for ${logvnc} (${waitcounter})"
+    echo "waiting for ${vncserverlog} (${waitcounter})"
     sleep 1
 done
 
-echo -e "========== LOGFILE: \n${logapp}\n"
+echo -e "========== LOGFILE: \n${appexecscriptlog}\n"
 
 if true; then
 
     # dirty hack, see below after 'else'
 
     sleep 2
-    sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" ${logvnc}
+    sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" ${vncserverlog}
     while true; do
-        grep 'Killing Xvnc process ID' ${logvnc} && break
+        grep 'Killing Xvnc process ID' ${vncserverlog} && break
         sleep 2
     done
     echo -e "==========\n"
@@ -201,8 +201,8 @@ else
     # but working when started by hand
     #   (debug so far: 'tail file | sed -ne' is always empty)
 
-    tail -n +0 -F ${logvnc} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" & shower=$!
-    tail -n +0 -F ${logvnc} | sed -ne "/Killing Xvnc process ID/q"
+    tail -n +0 -F ${vncserverlog} | sed -ne "s,.*TurboVNC:.*(\([^)]*\))$,========== RUN  IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password1} -noreconnect -nonewconn -scale auto \1\n\n========== VIEW IT NOW ($(date)):\n/opt/TurboVNC/bin/vncviewer -password ${password2} -noreconnect -nonewconn -scale auto \1\n,p" & shower=$!
+    tail -n +0 -F ${vncserverlog} | sed -ne "/Killing Xvnc process ID/q"
     echo -e "==========\n"
     kill ${shower}
 
