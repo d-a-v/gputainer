@@ -5,7 +5,8 @@ dependencies:
   - python
   - pinocchio
   - assimp
-  - pytorch::pytorch
+  #- pytorch::pytorch
+  - pytorch::pytorch=1.12  # v1.13 does not work with cuda and python 3.10
   - pytorch::torchvision
   - rclone
   - gxx_linux-64
