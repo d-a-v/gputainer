@@ -1,0 +1,12 @@
+========== LOGFILE: 
+/pfcalcul/work/emaitre/gputainer/CADModels2Cosypose/log-stdout-deleteme-4604972.txt
+
+========== RUN  IT NOW (ven. 28 oct. 2022 13:26:30 CEST):
+/opt/TurboVNC/bin/vncviewer -password 2499271 -noreconnect -nonewconn -scale auto dolcino:48
+
+========== VIEW IT NOW (ven. 28 oct. 2022 13:26:30 CEST):
+/opt/TurboVNC/bin/vncviewer -password view -noreconnect -nonewconn -scale auto dolcino:48
+
+Killing Xvnc process ID 2499307
+==========
+

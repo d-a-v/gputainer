@@ -1,0 +1,24 @@
+#!/bin/sh -e
+
+# Temporary commented until the repo is public
+
+# first get ros_cosyplan, which includes cosypose's environment.yaml
+# if [ ! -r CADModels2Cosypose/README.md ]; then
+#     git clone git@github.com:thomaschabal/CADModels2Cosypose.git
+# fi
+
+#!/bin/sh -e
+
+if [ ! -r 0-setup-env.vars.sh ]; then
+    echo "====================================================================================="
+    echo "Copying default environment template"
+    echo ""
+    echo "Please review and adjust '00-setup-env.vars.sh'"
+    echo ""
+    echo "Then restart me ($0)"
+    echo "====================================================================================="
+    cp 0-setup-env.vars-template.sh 0-setup-env.vars.sh
+    exit 0
+fi
+
+. ./0-setup-env.vars.sh

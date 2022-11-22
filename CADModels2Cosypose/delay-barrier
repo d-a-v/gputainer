@@ -1,0 +1,31 @@
+#!/bin/sh
+
+
+# synopsis: barrier [<some-id> [<seconds>]]
+#      Let only one call get through on every <seconds> seconds (default: 3s)
+#      <some-id> must be unique when sharing with multiple scripts
+barrier ()
+{
+    file=/tmp/delete-me-barrier-${1}-
+    export seconds=${2-3}
+    flock ${file}1 bash -c "while [ -r ${file}2 ]; do diffsec=\$(( \$(date +%s) - \$(stat --printf="%Y" ${file}2) )); [ \${diffsec} -ge \${seconds} ] && break; echo wait; sleep 1; done; touch ${file}2"
+}
+
+
+
+
+
+# test
+
+echo "starting at date $(date)"
+
+test_one ()
+{
+    echo ask $1
+    barrier beurk 10
+    echo "------> got $1 at date $(date)"
+}
+
+for i in 1 2 3; do
+    test_one $i &
+done

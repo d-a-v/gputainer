@@ -1,0 +1,12 @@
+#!/bin/sh
+. ./env.sh
+
+set -e
+set -x
+
+[ ! -z "${header}" ]
+[ ! -z "${watcher}" ]
+
+rm -f log-stdout-* stderr-*txt stdout-*txt ${header}-* ${watcher}
+rm -rf .temphome
+rm -rf generated-if-needed

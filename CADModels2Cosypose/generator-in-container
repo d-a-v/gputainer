@@ -1,0 +1,94 @@
+#!/bin/bash
+
+. ./env.sh
+. ./environment.sh
+
+
+barrier ()
+{
+    file=/tmp/delete-me-barrier-${1}-
+    export seconds=${2-3}
+    flock ${file}1 bash -c "while [ -r ${file}2 ]; do diffsec=\$(( \$(date +%s) - \$(stat --printf="%Y" ${file}2) )); [ \${diffsec} -ge \${seconds} ] && break; echo wait; sleep 1; done; touch ${file}2"
+}
+
+if [ -z "${MYHOME}" ]; then
+    echo "This script must be started by apptainer"
+    echo "  ./2-initial-submitter"
+    exit 1
+fi
+
+echo I am in a container:
+env|grep APPTAINER
+
+id=genlauncher-${SLURM_JOBID-deleteme}
+
+# creating scripts for some number of complex tasks
+dataset_name=tless
+
+OUTPUT_DIR=${data_folder}/scenes/$dataset_name
+
+echo "starting at date $(date)"
+
+test_one ()
+{
+    echo ask $1
+    barrier beurk 10
+    echo "------> got $1 at date $(date)"
+}
+
+for task_number in 1 2 3; do
+
+    echo Preparing for the data generatin, task number ${task_number}
+    RENDERED_BATCH_PATH=$OUTPUT_DIR/batch${task_number}
+    # Plan something here (using OpenGL/EGL like with pyBullet)
+    # then generate slurm sbatch file
+    # Example:
+    cat << EOF > ${header}-${id}-${task_number}
+
+echo I am a fake complex task called ${header}-${id}-${task_number}
+. ./environment.sh
+. /pyenv/venv/bin/activate
+
+echo "########"
+echo "batch ${task_number}"
+echo "########"
+blenderproc run ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_data.py --output-dir $RENDERED_BATCH_PATH --custom-blender-path ${blender_path};
+python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_gt_info.py --rendered-batch-path $RENDERED_BATCH_PATH;
+python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_gt_masks.py --rendered-batch-path $RENDERED_BATCH_PATH
+EOF
+
+    # make this script executable
+    chmod +x ${header}-${id}-${task_number}
+
+    # now we want to run it with SLURM inside a gputainer container
+
+    # The following file is the slurm+container launcher for the above file
+
+    # Now generate slurm sbatch file.
+    cat << EOF > ${header}-${id}-${task_number}.sbatch.temp
+#!/bin/bash
+#SBATCH --job-name=datageneration-${task_number}
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=gpu
+#SBATCH --mail-type=ALL
+#SBATCH --output=stdout-%j.txt
+#SBATCH --error=stderr-%j.txt
+#SBATCH --mem=5G
+#SBATCH --gres=gpu:1
+
+# From inside the container run by slurm, start
+# the script generated above
+../__gputainer/runvnc $(pwd)/${header}-${id}-${task_number}
+EOF
+    # Make it appear at once by renaming it to the right name.
+    # This file name is tracked by the watcher
+    # from inside ./2-initial-submitter
+    # and will be submitted to SLURM
+    mv ${header}-${id}-${task_number}.sbatch.temp  ${header}-${id}-${task_number}.sbatch
+
+    test_one $i &
+
+
+
+done
