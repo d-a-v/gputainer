@@ -93,17 +93,15 @@ When running a container with `./xxxx-runvnc`, the `run-in-container` script is 
 To manually check the container state after a build and run an `xterm`
 instead, here is an example with the `testgl` example:
 
-- On the gpu server: `./2-runvnc bash`
+- On the gpu server: `./2-runvnc icewm` (or `slurm 2-slurm.sbatch icewm`)
 
-  Wait for the `RUN IT` message and copy the `vncviewer` line
+  Wait for the `RUN IT` message and copy the `vncviewer` line on your desktop.
 
 - On your local host, paste the command
 
-- In the opened xterm inside vnc,
-  - start another `xterm -geometry 160x60 bash`
-  - or try running `icewm` which is also installed, and start a console
+- Use `icewm` menus to start an X terminal
 
-- In the new console, type `cat run-in-container` and copy-paste the few lines which activate the python environment (if/generally applicable).
+- In the new console, type `cat run-in-container` and copy-paste the few lines which activate the python environment (if applicable).
 
 - Play, noting that:
     - you are not root in the container filesystem (no `apt install` allowed)
