@@ -18,8 +18,7 @@ if [ ! -r cosypose/README.md ]; then
     git clone ${cosypose_branch} ${cosypose}
     (cd cosypose; git submodule update --init)
     (cd cosypose; for p in ../patches/*.patch; do patch -Np1 < ${p}; done)
-
+    ln -s ${local_data} cosypose/local_data
 fi
 
 [ -z "${condaenv}" ] || cp ${condaenv} cosypose/environment.yaml
-ln -sf ${local_data} cosypose/local_data
