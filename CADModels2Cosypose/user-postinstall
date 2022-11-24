@@ -1,0 +1,34 @@
+. ./environment.sh
+
+##################
+# Installing blender
+##################
+
+blenderMajor=3.2
+blenderMinor=1
+blenderVersion=${blenderMajor}.${blenderMinor}-linux-x64
+blender=https://mirrors.dotsrc.org/blender/release/Blender${blenderMajor}/blender-${blenderVersion}.tar.xz
+
+cd ${WORK}/CADModels2Cosypose/
+[ -r blender-${blenderVersion}.tar.xz ] || wget ${blender}
+tar xfJ blender-${blenderVersion}.tar.xz
+rm -f blender-${blenderVersion}.tar.xz || true
+mkdir ${WORK}/CADModels2Cosypose/blender
+mv blender-${blenderVersion} ${WORK}/CADModels2Cosypose/blender/blender-${blenderVersion}
+
+##################
+
+apt -y install make gcc
+
+##################
+
+cd ${WORK}/CADModels2Cosypose/CADModels2Cosypose/
+pip install blenderproc && blenderproc run cad2cosypose/install_bproc.py --custom-blender-path ${blender_path}
+pip install git+https://github.com/thodan/bop_toolkit.git
+${blender_path}/3.2/python/bin/python3.10 -m ensurepip && \
+${blender_path}/3.2/python/bin/python3.10 -m pip install --upgrade pip
+${blender_path}/3.2/python/bin/python3.10 -m pip install -e . && \
+pip install -r requirements.txt && \
+pip install -e . && \
+. /pyenv/venv/bin/activate && \
+blenderproc download cc_textures ${blender_parent_path}/cc_textures/

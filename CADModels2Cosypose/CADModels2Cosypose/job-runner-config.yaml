@@ -1,0 +1,31 @@
+default_project: 'cosypose'
+default_queue: 'gpu_p1'
+
+projects:
+  cosypose:
+    dir: '$WORK/tchabal/code/CADModels2Cosypose/deps' # Replace $WORK/projects by location of cosypose directory
+    preamble: 'cosypose/job-runner-preamble.sh'
+    conda_env: 'cosypose'
+    default_queue: 'gpu_p1'
+
+conda:
+  root: '$WORK/miniconda3' # Path to anaconda installation
+
+storage:
+  root: '$SCRATCH/tchabal/jobs' # Where to store information of the jobs
+
+gpu_queues:
+  gpu_p1:  # Provide SLURM information relative to the queue you want to use
+    n_cpus_per_node: 40
+    n_gpus_per_node: 4
+    flags:
+      # time: '20:00:00'
+      # time: '02:00:00'
+      time: '10:00:00'
+      hint: 'nomultithread'
+      qos: 'qos_gpu-t3'
+      # qos: 'qos_gpu-dev'
+
+  local:  # Don't touch this
+    n_cpus_per_node: 'auto'
+    n_gpus_per_node: 'auto'
