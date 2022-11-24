@@ -3,6 +3,6 @@
 . ./environment.sh
 . /pyenv/venv/bin/activate
 
-python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/gather_batches.py
-python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/calc_model_info.py
-python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/copy_ply_to_models.py
+python ${WORK}/CADModels2Cosypose/cad2cosypose/gather_batches.py
+python ${WORK}/CADModels2Cosypose/cad2cosypose/calc_model_info.py
+python ${WORK}/CADModels2Cosypose/cad2cosypose/copy_ply_to_models.py

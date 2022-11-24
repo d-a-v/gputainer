@@ -52,9 +52,9 @@ echo I am a fake complex task called ${header}-${id}-${task_number}
 echo "########"
 echo "batch ${task_number}"
 echo "########"
-blenderproc run ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_data.py --output-dir $RENDERED_BATCH_PATH --custom-blender-path ${blender_path};
-python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_gt_info.py --rendered-batch-path $RENDERED_BATCH_PATH;
-python ${WORK}/CADModels2Cosypose/CADModels2Cosypose/cad2cosypose/generate_gt_masks.py --rendered-batch-path $RENDERED_BATCH_PATH
+blenderproc run ${WORK}/CADModels2Cosypose/cad2cosypose/generate_data.py --output-dir $RENDERED_BATCH_PATH --custom-blender-path ${blender_path};
+python ${WORK}/CADModels2Cosypose/cad2cosypose/generate_gt_info.py --rendered-batch-path $RENDERED_BATCH_PATH;
+python ${WORK}/CADModels2Cosypose/cad2cosypose/generate_gt_masks.py --rendered-batch-path $RENDERED_BATCH_PATH
 EOF
 
     # make this script executable
@@ -74,7 +74,7 @@ EOF
 #SBATCH --mail-type=ALL
 #SBATCH --output=stdout-%j.txt
 #SBATCH --error=stderr-%j.txt
-#SBATCH --mem=5G
+#SBATCH --mem=10G
 #SBATCH --gres=gpu:1
 
 # From inside the container run by slurm, start

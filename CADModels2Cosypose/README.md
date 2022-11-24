@@ -16,9 +16,7 @@ You need to download the [bop datasets](https://bop.felk.cvut.cz/datasets/). You
 ---
 The first step is to configure the `environment.sh` file according to your environment. In particular:
 
-
 ```
-WORK=/path/to/gputainer/
 data_folder=/path/to/the/data_folder/
 ```
 
@@ -33,21 +31,15 @@ In particular, it important to notice that the `bop_parent_path` points to the b
 
 Then, as the other modules of this repository, the execution follows these steps:
 
-1. Setup
-
-```
-./0-setup
-```
-
-2. Build
+1. Build
 ```
 ./1-build-nvidia-515
 ```
-3. Run the data generation process
+2. Run the data generation process
 ```
 ./2-initial-submitter
 ```
-4. Run the post-generation process
+3. Run the post-generation process
 ```
 sbatch 20-slurm.sbatch
 ```
@@ -59,8 +51,6 @@ An utilitary cleaning script is provided, to delete temporary files.
 ## Explanation
 --- 
 
-### Setup
----
 ### Build
 ---
 On top of the build classicaly done for all the components of this containers, here are the specifity of this module.
