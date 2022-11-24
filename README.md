@@ -78,40 +78,57 @@ When the application is builded on server, the `scp ... testgl` line can be copy
 ## Tweaking inside the container
 
 Upon build, the subdirectory `<app>/generated/` is created.  It contains two
-directories `PYTHAINER/` and `<app>.sif/`.  `<app>.sif` should be a file in
-a real world, and can later be converted, but is really a directory.  This
-directory is rebuilded everytime when restarting the `build` script, and is
-the root filesystem of the container.
+directories `PYTHAINER/` and `<app>.sifdir/`.
 
-`PYTHAINER` is not rebuilded everytime, it has to be removed for that.  This
-allows to incrementally tune the build scripts.  This directory is the
-python root container for `conda` or `PyPI` and can sometimes take ages to
-be fully rebuilt.
+`<app>.sifdir` should be a file, and can later be created (see below), but a
+directory is preferred during the first steps to allow examining / ease
+tuning inside the container.  This directory is rebuilded everytime when
+restarting the `build` script, and is the root filesystem of the container.
 
-When running a container with `./xxxx-runvnc`, the `run-in-container` script is started.
+`PYTHAINER/` is the python root container for `conda` or `PyPI` and can
+sometimes take ages to be fully rebuilt.  It is not rebuilded everytime,
+unless it is removed.  This allows to incrementally tune the build scripts.
 
-To manually check the container state after a build and run an `xterm`
-instead, here is an example with the `testgl` example:
+When the container is started with `./xxxx-runvnc`, the `run-in-container`
+script is started from inside.
+
+To manually check a container after a build, here are the steps with the
+`testgl` example:
 
 - On the gpu server: `./2-runvnc icewm` (or `slurm 2-slurm.sbatch icewm`)
 
-  Wait for the `RUN IT` message and copy the `vncviewer` line on your desktop.
+  Note the optional argument `icewm`, it is always installed inside in the
+  container.
 
-- On your local host, paste the command
+  Wait for the `RUN IT` on the console (or in `stdout.txt` when using SLURM)
+  and copy the `vncviewer` line to a shell on your *desktop host* = not the
+  remote GPU host.
 
-- Use `icewm` menus to start an X terminal
+- In the VNC client, use `icewm` menus to start an X terminal
 
-- In the new console, type `cat run-in-container` and copy-paste the few lines which activate the python environment (if applicable).
+- In the new console, type `cat run-in-container` and copy-paste the few
+  lines which activate the python environment (if applicable).
 
-- Play, noting that:
-    - you are not root in the container filesystem (no `apt install` allowed)
-    - you can modify the python environment (`pip install`) and this will be persistent
-      but not reproducible until you add the commands in the `user-postinstall` script.
+- Check everything is working, noting that:
+    - You are not root in the container filesystem (no `apt install` allowed)
+    - You can modify the python environment (`pip install`) and this will be persistent
+      but not reproducible upon rebuild until you add the commands in the
+      `user-pre/postinstall` scripts or change your `environment.yaml` /
+      `requirements.txt` descriptions.
 
-## Convert container to file
+## Converting the directory container to a transportable file
 
-A script called `../__gputainer/sifdir-to-sif` will build and store
-`transportable/<app>.sif` (and `<app>.runme` along with user's
-`run-in-container`) out of `generated/` directory content.  External
-directories such as repositories cloned in setup scripts are not included
-in the resulting `sif` file.
+A callable script:
+```
+../__gputainer/sifdir-to-sif
+```
+allows to convert the `generated/` directory container into
+a `transportable/<app>.sif` file, and create side files and scripts like
+`transportable/<app>.runme` along with user's `run-in-container`.
+
+Note that the `run-in-container` script, and also the external `<app>`
+directory *are not included* in the resulting `sif` file on purpose, they
+are respectively copied and symlinked.
+
+Not including them allows to tune / update / work on the payload / running
+code while not having to costingly fully rebuild the running environment.
