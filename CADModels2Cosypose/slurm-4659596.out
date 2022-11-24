@@ -1,2 +1,0 @@
-This script must NOT be run with sbatch:
-  .//var/spool/slurmd/job4659596/slurm_script
