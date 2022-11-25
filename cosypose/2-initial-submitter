@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ ! -z "${SLURM_JOB_NAME}" ]; then
+    echo "This script must NOT be run with sbatch:"
+    echo "  ./$0"
+    exit 1
+fi
+
+. ./env.sh
+
+if [ -z "${watcher}" ]; then
+    echo "\"watcher\" variable is empty in config file env.sh"
+    exit 1
+fi
+if [ -z "${header}" ]; then
+    echo "\"header\" variable is empty in config file env.sh"
+    exit 1
+fi
+
+echo "Starting watcher"
+
+#####################################
+# start watcher:
+# - check for "${header}*sbatch" files
+# - submt them with sbatch
+# - stop when "${watcher}" is removed
+
+if [ -r "${watcher}" ]; then
+    echo "A watcher is already started, please delete its file first:" 1>&2
+    echo "  rm ${watcher}" 1>&2
+    exit 1
+fi
+
+touch ${watcher}
+
+(
+    while [ -r ${watcher} ]; do
+        sleep 1
+        for script in ${header}*sbatch; do
+            if [ -r "${script}" ]; then
+                mv ${script} ${script}-started
+                # secondary submitter
+                sbatch ${script}-started
+            fi
+        done
+    done
+) >& /dev/null </dev/null & pid=$!
+
+echo Watdhdog is started with pid ${pid}
+
+#####################################
+# start job generator
+
+# primary submitter
+sbatch 3-generator "$@"
