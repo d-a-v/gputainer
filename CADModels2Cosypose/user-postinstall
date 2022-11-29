@@ -25,12 +25,12 @@ blenderMinor=1
 blenderVersion=${blenderMajor}.${blenderMinor}-linux-x64
 blender=https://mirrors.dotsrc.org/blender/release/Blender${blenderMajor}/blender-${blenderVersion}.tar.xz
 
-cd ${WORK}/CADModels2Cosypose/
+cd ${WORK}/
 [ -r blender-${blenderVersion}.tar.xz ] || wget ${blender}
 tar xfJ blender-${blenderVersion}.tar.xz
 rm -f blender-${blenderVersion}.tar.xz || true
-mkdir ${WORK}/CADModels2Cosypose/blender
-mv blender-${blenderVersion} ${WORK}/CADModels2Cosypose/blender/blender-${blenderVersion}
+mkdir ${WORK}/blender
+mv blender-${blenderVersion} ${WORK}/blender/blender-${blenderVersion}
 
 ##################
 
@@ -38,7 +38,7 @@ apt -y install make gcc
 
 ##################
 
-cd ${WORK}/CADModels2Cosypose/CADModels2Cosypose/
+cd ${WORK}/CADModels2Cosypose/
 pip install blenderproc && blenderproc run cad2cosypose/install_bproc.py --custom-blender-path ${blender_path}
 pip install git+https://github.com/thodan/bop_toolkit.git
 ${blender_path}/3.2/python/bin/python3.10 -m ensurepip && \

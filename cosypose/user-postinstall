@@ -18,19 +18,3 @@
 pip install seaborn
 pip install selenium==3.8.0
 conda install -y phantomjs -c conda-forge
-
-##################
-# install Blender
-
-blenderMajor=3.2
-blenderMinor=1
-blenderVersion=${blenderMajor}.${blenderMinor}-linux-x64
-blender=https://mirrors.dotsrc.org/blender/release/Blender${blenderMajor}/blender-${blenderVersion}.tar.xz
-
-cd /tmp
-[ -r blender-${blenderVersion}.tar.xz ] || wget ${blender}
-cd /
-tar xfJ /tmp/blender-${blenderVersion}.tar.xz
-rm -f /tmp/blender-${blenderVersion}.tar.xz || true
-
-##################
