@@ -33,7 +33,7 @@ if [ -z "${APP}" ]; then
 fi
 
 if ${extpython}; then
-    opts="--sandbox --bind ${APPDIR}/generated/PYTHAINER:/pyenv"
+    opts="${opts} --sandbox --bind ${APPDIR}/generated/PYTHAINER:/pyenv"
     mkdir -p ${APPDIR}/generated/PYTHAINER
 fi
 
@@ -58,6 +58,10 @@ export APPTAINERENV_APPDIR="${APPDIR}"
 export APPTAINERENV_APPNAME="${APPNAME}"
 export APPTAINERENV_NEED_CUDNN="${NEED_CUDNN}"  # empty, or 10.2 or 11.6 only are available at the time of writing
 
+opts="${opts} --fakeroot"    # necessary for apptainer-1.0.3 under ubuntu 18.04
+[ -r /net ] && opts="${opts} --bind /net:/net"
+[ -r /local ] && opts="${opts} --bind /local:/local"
+
 mkdir -p ${APPDIR}/generated
 cd ${APPDIR}
-apptainer build ${opts} --bind ${PWD}/../__gputainer/debs:/debs --bind /net:/net --bind /local:/local ${APPDIR}/generated/${APPNAME}.sifdir ../__gputainer/app.def 2>&1 | tee log-build-$(date +%y-%m-%d-%H-%M-%S)
+apptainer build ${opts} --bind ${PWD}/../__gputainer/debs:/debs ${APPDIR}/generated/${APPNAME}.sifdir ../__gputainer/app.def 2>&1 | tee log-build-$(date +%y-%m-%d-%H-%M-%S)
