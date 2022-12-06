@@ -1,7 +1,10 @@
 
 # Headless & batch runtime environment helper for building and starting GPU applications requiring a display, using Apptainer (ex-singularity)
 
-This environment is designed to help running GPU & EGL applications in a SLURM environment. It is organized in different subparts ([cosypose](https://github.com/d-a-v/gputainer/tree/master/cosypose), [cupy](https://github.com/d-a-v/gputainer/tree/master/cupy), [ros_cosypose](https://github.com/d-a-v/gputainer/tree/master/ros_cosypose), [testgl](https://github.com/d-a-v/gputainer/tree/master/testgl)). The following section describes the general prerequisites. For each subpart, please refer to its dedicated readme.
+This environment is designed to help running GPU & EGL applications in a SLURM environment. It is organized in different subparts ([CADModels2Cosypose](https://github.com/d-a-v/gputainer/tree/master/CADModels2Cosypose), [cosypose](https://github.com/d-a-v/gputainer/tree/master/cosypose), [cupy](https://github.com/d-a-v/gputainer/tree/master/cupy), [ros_cosypose](https://github.com/d-a-v/gputainer/tree/master/ros_cosypose), [testgl](https://github.com/d-a-v/gputainer/tree/master/testgl)). The following section describes the general prerequisites, necessary for all the subparts. For each subpart, a dedicated readme is provided, containing the technical details. Here is a short summary of each of the subparts:
+
+- [Cosypose](https://github.com/d-a-v/gputainer/tree/master/cosypose) is the main component of this repository. It includes inference, using the pretrained version of Cosypose. It is also possible to train the model with custom data. To do so, you must first refer to [CADModels2Cosypose](https://github.com/d-a-v/gputainer/tree/master/CADModels2Cosypose).
+- [CADModels2Cosypose](https://github.com/d-a-v/gputainer/tree/master/CADModels2Cosypose) is used to generate the data necessary to the training of a custom version of Cosypose.
 
 ## Prerequisites on a debian-like environment
 
@@ -118,7 +121,9 @@ To manually check a container after a build, here are the steps with the
 
 ## Converting the directory container to a transportable file
 
-A callable script:
+Once you have build one  of the containers of this repository, you might want to export it.
+
+A callable script helps to do that:
 ```
 ../__gputainer/sifdir-to-sif
 ```
