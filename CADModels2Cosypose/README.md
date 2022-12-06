@@ -9,7 +9,7 @@ It is adapted to .ply CAD models and the scripts are made specifically for clust
 ### Data
 --- 
 
-You need to download the [bop datasets](https://bop.felk.cvut.cz/datasets/). You will then need to point to the directory story these data in the next section.
+Download the [bop datasets](https://bop.felk.cvut.cz/datasets/). Then, point to the directory storing these data, as indicated in the next section. These dataset can be used to train CosyPose but are also used as decoy during the data generation.
 
 
 ### Configuration
@@ -51,22 +51,20 @@ An utilitary cleaning script is provided, to delete temporary files.
 ## Explanation
 --- 
 
-### Build
----
-On top of the build classicaly done for all the components of this containers, here are the specifity of this module.
+### 1. Build
 
-During the `2.Build` phase, the container is built following the same reasoning as the others modules. The main difference happens in the `user-postinstall`. 
+During the `2.Build` phase, the container is build following the same reasoning as the others modules. The main difference happens in the `user-postinstall`. 
 
 First, environment variables are set in the container.
-THen, blender is installed. Feel free to modify the version of Blender according to the releases. However, we cannot garanty that it will not affect other parts of the system.
+Then, blender is installed. Feel free to modify the version of Blender according to the releases. However, we cannot garanty that it will not affect other parts of the system.
 
 Finally, [blenderproc](https://github.com/DLR-RM/BlenderProc) is configured and used to download necessary textures.
 
-### Data generation process
----
+### 2. Data generation process
+
 This process is run in parallel to speed up the computation. Different slurm jobs will be run.
 
-### Post-generation process
----
+### 3. Post-generation process
+
 
 The data generated in each of these batches are gathered in a single folder, to make them usable for the training phase.
