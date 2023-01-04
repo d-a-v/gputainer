@@ -1,8 +1,13 @@
 #!/bin/sh
 
+# Variables for slurm tasks administration
+header=task2submit
+watcher=A-monitor-is-running--delete-this-file-to-stop-it
+
 # Path to the working directory containing gputainer
 export WORK=$(pwd)
 export blender_path=$WORK/blender/blender-3.2.1-linux-x64
+
 # Path to where the data is stored
 export data_folder= # Path to data storage
 export blender_parent_path=$WORK/blender

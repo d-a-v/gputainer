@@ -22,14 +22,14 @@ if [ ! -z "${SLURM_JOB_NAME}" ]; then
     exit 1
 fi
 
-. ./env.sh
+. ./environment.sh
 
 if [ -z "${watcher}" ]; then
-    echo "\"watcher\" variable is empty in config file env.sh"
+    echo "\"watcher\" variable is empty in config file environment.sh"
     exit 1
 fi
 if [ -z "${header}" ]; then
-    echo "\"header\" variable is empty in config file env.sh"
+    echo "\"header\" variable is empty in config file environment.sh"
     exit 1
 fi
 

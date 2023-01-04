@@ -33,11 +33,11 @@ Then, as the other modules of this repository, the execution follows these steps
 
 1. Build
 ```
-./1-build-nvidia-515
+./01-build-nvidia-515
 ```
 2. Run the data generation process
 ```
-./2-initial-submitter
+./02-initial-submitter
 ```
 3. Run the post-generation process
 ```

@@ -1,5 +1,5 @@
 #!/bin/sh
-. ./env.sh
+. ./environment.sh
 
 set -e
 set -x

@@ -9,7 +9,7 @@
 #SBATCH --mem=5G
 #SBATCH --gres=gpu:1
 
-. ./env.sh
+. ./environment.sh
 
 if [ -z "${SLURM_JOB_NAME}" ]; then
     echo "This script must be run with sbatch:"
