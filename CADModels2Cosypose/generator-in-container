@@ -16,7 +16,6 @@
 # 
 # Author: Elliot Maître
 
-. ./env.sh
 . ./environment.sh
 
 
